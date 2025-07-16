@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1 class="mb-4">{% trans "Listening History" %}</h1>
+    <ul class="list-group">
+        {% for item in history %}
+            <li class="list-group-item">
+                <strong>{{ item.song_title }}</strong> {% trans "by" %} {{ item.artist }} <span class="float-end text-muted">{{ item.listened_at|date:"Y-m-d H:i" }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">{% trans "No listening history yet." %}</li>
+        {% endfor %}
+    </ul>
+    <p class="mt-3"><a href="{% url 'mypage:index' %}" class="btn btn-secondary">{% trans "Back to My Page" %}</a></p>
+{% endblock %}

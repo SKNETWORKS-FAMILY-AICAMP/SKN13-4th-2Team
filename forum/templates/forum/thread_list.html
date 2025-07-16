@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1 class="mb-4">{% blocktrans %}Threads in {{ category.name }}{% endblocktrans %}</h1>
+    <ul class="list-group mb-3">
+        {% for thread in threads %}
+            <li class="list-group-item">
+                <a href="{% url 'forum:post_list' thread.id %}">{{ thread.title }}</a> {% trans "by" %} {{ thread.author.username }}
+                <span class="badge bg-secondary float-end">{{ thread.created_at|date:"Y-m-d H:i" }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">{% trans "No threads in this category yet." %}</li>
+        {% endfor %}
+    </ul>
+    <p>
+        <a href="{% url 'forum:index' %}" class="btn btn-secondary">{% trans "Back to Categories" %}</a>
+        <a href="{% url 'forum:create_thread' %}" class="btn btn-primary">{% trans "Create New Thread" %}</a>
+    </p>
+{% endblock %}

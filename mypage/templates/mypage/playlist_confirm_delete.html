@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{% trans "Confirm Delete" %}</h2>
+                    <p class="text-center">{% blocktrans %}Are you sure you want to delete the playlist "<strong>{{ playlist.name }}</strong>"?{% endblocktrans %}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100">{% trans "Delete" %}</button>
+                        <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="btn btn-secondary w-100 mt-2">{% trans "Cancel" %}</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

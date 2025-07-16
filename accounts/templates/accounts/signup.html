@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{% trans "Sign Up" %}</h2>
+                    <form method="post" id="signup-form">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100" id="signup-button">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span class="button-text">{% trans "Sign Up" %}</span>
+                        </button>
+                    </form>
+                    <script>
+                        document.getElementById('signup-form').addEventListener('submit', function() {
+                            const button = document.getElementById('signup-button');
+                            const spinner = button.querySelector('.spinner-border');
+                            const buttonText = button.querySelector('.button-text');
+
+                            button.disabled = true;
+                            spinner.classList.remove('d-none');
+                            buttonText.textContent = '{% trans "Signing up..." %}'; // You might need to add this translation to your .po file
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

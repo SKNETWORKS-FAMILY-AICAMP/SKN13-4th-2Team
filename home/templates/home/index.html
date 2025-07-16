@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">{% trans "Welcome to Music Recommender!" %}</h1>
+        <p class="lead">{% trans "Explore music, chat with our bot, manage your profile, and share with others." %}</p>
+        <hr class="my-4">
+        <p>{% trans "Use the navigation bar above to explore different sections of the site." %}</p>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans "Chatbot" %}</h5>
+                    <p class="card-text">{% trans "Get real-time music recommendations." %}</p>
+                    <a href="{% url 'chatbot:index' %}" class="btn btn-primary">{% trans "Go to Chatbot" %}</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans "My Page" %}</h5>
+                    <p class="card-text">{% trans "Manage your profile and preferences." %}</p>
+                    <a href="{% url 'mypage:index' %}" class="btn btn-primary">{% trans "Go to My Page" %}</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans "Forum" %}</h5>
+                    <p class="card-text">{% trans "Discuss music and share playlists." %}</p>
+                    <a href="{% url 'forum:index' %}" class="btn btn-primary">{% trans "Go to Forum" %}</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans "Account" %}</h5>
+                    <p class="card-text">{% trans "Login or create a new account." %}</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:logout' %}" class="btn btn-danger">{% trans "Logout" %}</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="btn btn-success">{% trans "Login" %}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

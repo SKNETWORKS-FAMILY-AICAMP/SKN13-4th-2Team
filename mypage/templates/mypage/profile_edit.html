@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h2 class="mb-4">{% trans "Edit Profile" %}</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="profile-edit-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary" id="save-profile-button">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <span class="button-text">{% trans "Save Changes" %}</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('profile-edit-form').addEventListener('submit', function() {
+            const button = document.getElementById('save-profile-button');
+            const spinner = button.querySelector('.spinner-border');
+            const buttonText = button.querySelector('.button-text');
+
+            button.disabled = true;
+            spinner.classList.remove('d-none');
+            buttonText.textContent = '{% trans "Saving..." %}'; // You might need to add this translation to your .po file
+        });
+    </script>
+{% endblock %}

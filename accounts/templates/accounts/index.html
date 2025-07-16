@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1 class="mb-4">{% trans "Account Settings" %}</h1>
+    <div class="list-group">
+        <a href="{% url 'accounts:password_change' %}" class="list-group-item list-group-item-action">{% trans "Change Password" %}</a>
+        <a href="{% url 'accounts:email_change' %}" class="list-group-item list-group-item-action">{% trans "Change Email" %}</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1 class="mb-4">{{ thread.title }}</h1>
+    <p class="text-muted">{% trans "Author" %}: {{ thread.author.username }} | {% trans "Created" %}: {{ thread.created_at|date:"Y-m-d H:i" }}</p>
+    <hr>
+    <div class="mb-4">
+        {% for post in posts %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ post.author.username }} <small class="float-end">{{ post.created_at|date:"Y-m-d H:i" }}</small></h6>
+                    <p class="card-text">{{ post.content }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>{% trans "No posts in this thread yet." %}</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">{% trans "Add a Post" %}</h2>
+                <form method="post" action="{% url 'forum:create_post' thread.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">{% trans "Submit Post" %}</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p class="alert alert-info">{% trans "Please" %} <a href="{% url 'accounts:login' %}">{% trans "log in" %}</a> {% trans "to add a post." %}</p>
+    {% endif %}
+
+    <p><a href="{% url 'forum:thread_list' thread.category.id %}" class="btn btn-secondary">{% trans "Back to Thread List" %}</a></p>
+{% endblock %}
