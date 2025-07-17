@@ -1,12 +1,80 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 from .models import Category, Thread, Post
-from .forms import ThreadForm, PostForm
+from .forms import ThreadForm, PostForm, CategoryForm
+
+# Helper function to check if user is superuser
+def is_superuser(user):
+    return user.is_superuser
 
 @login_required
 def index(request):
     categories = Category.objects.all()
-    return render(request, 'forum/index.html', {'categories': categories})
+    all_threads = Thread.objects.all().order_by('-created_at')
+
+    paginator = Paginator(all_threads, 10) # 한 페이지에 10개의 스레드
+    page_number = request.GET.get('page')
+    threads = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest': # AJAX 요청인 경우
+        data = []
+        for thread in threads:
+            data.append({
+                'id': thread.id,
+                'title': thread.title,
+                'category_name': thread.category.name,
+                'author_username': thread.author.username,
+                'created_at': thread.created_at.strftime("%Y-%m-%d %H:%M"),
+                'post_count': thread.posts.count()
+            })
+        return JsonResponse({'threads': data, 'has_next': threads.has_next()})
+
+    return render(request, 'forum/index.html', {
+        'categories': categories,
+        'threads': threads,
+        'current_page_number': threads.number,
+        'has_next_page': threads.has_next()
+    })
+
+@login_required
+@user_passes_test(is_superuser)
+def create_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category created successfully.")
+            return redirect('forum:index')
+    else:
+        form = CategoryForm()
+    return render(request, 'forum/create_category.html', {'form': form})
+
+@login_required
+@user_passes_test(is_superuser)
+def edit_category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category updated successfully.")
+            return redirect('forum:index')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'forum/edit_category.html', {'form': form, 'category': category})
+
+@login_required
+@user_passes_test(is_superuser)
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, "Category deleted successfully.")
+        return redirect('forum:index')
+    return render(request, 'forum/confirm_delete_category.html', {'category': category})
 
 @login_required
 def thread_list(request, category_id):
@@ -50,7 +118,7 @@ def create_post(request, thread_id):
 @login_required
 def post_edit(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    if request.user != post.author:
+    if request.user != post.author and not request.user.is_superuser:
         messages.error(request, "You are not authorized to edit this post.")
         return redirect('forum:post_list', thread_id=post.thread.id)
 

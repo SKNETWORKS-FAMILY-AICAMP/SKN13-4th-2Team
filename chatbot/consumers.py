@@ -12,10 +12,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = 'chat_%s' % self.room_name
 
         # Initialize Spotify client
+        import requests
+        session = requests.Session()
+        session.headers.update({'Accept-Language': 'ko-KR'})
         self.spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
             client_id=settings.SPOTIPY_CLIENT_ID,
             client_secret=settings.SPOTIPY_CLIENT_SECRET
-        ))
+        ), requests_session=session)
 
         # Join room group
         await self.channel_layer.group_add(

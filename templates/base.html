@@ -47,6 +47,9 @@
         .card:hover {
             transform: translateY(-5px);
         }
+        .category-card:hover {
+            transform: none; /* Remove hover effect for category card */
+        }
     </style>
 </head>
 <body>
@@ -74,8 +77,8 @@
 
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <span class="navbar-text me-2">{% trans "Hello," %} {{ user.username }}!</span>
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="navbar-text me-2">안녕하세요, {% if user.is_authenticated and user.profile.nickname %}{{ user.profile.nickname }}{% else %}{{ user.username }}{% endif %}님!</span>
                         </li>
                         <li class="nav-item">
                             <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">

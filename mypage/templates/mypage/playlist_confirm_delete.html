@@ -6,12 +6,12 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title text-center mb-4">{% trans "Confirm Delete" %}</h2>
-                    <p class="text-center">{% blocktrans %}Are you sure you want to delete the playlist "<strong>{{ playlist.name }}</strong>"?{% endblocktrans %}</p>
+                    <h2 class="card-title text-center mb-4">삭제 확인</h2>
+                    <p class="text-center">플레이리스트 "<strong>{{ playlist.name }}</strong>"을(를) 정말로 삭제하시겠습니까?</p>
                     <form method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger w-100">{% trans "Delete" %}</button>
-                        <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="btn btn-secondary w-100 mt-2">{% trans "Cancel" %}</a>
+                        <button type="submit" class="btn btn-danger w-100">삭제</button>
+                        <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="btn btn-secondary w-100 mt-2">취소</a>
                     </form>
                 </div>
             </div>

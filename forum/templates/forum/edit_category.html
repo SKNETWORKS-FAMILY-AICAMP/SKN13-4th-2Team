@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1 class="mb-4">{% trans "Edit Category" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% trans "Update Category" %}</button>
+        <a href="{% url 'forum:index' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+    </form>
+{% endblock %}

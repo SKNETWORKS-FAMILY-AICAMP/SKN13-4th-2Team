@@ -2,30 +2,211 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">{% trans "Forum Categories" %}</h1>
-        <a href="{% url 'forum:create_thread' %}" class="btn btn-primary">{% trans "Create New Thread" %}</a>
-    </div>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        {% for category in categories %}
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ category.name }}</h5>
-                        <p class="card-text">{{ category.description|default:"" }}</p>
-                        <a href="{% url 'forum:thread_list' category.id %}" class="btn btn-outline-primary">{% trans "View Threads" %}</a>
-                    </div>
+    <div class="row d-flex align-items-stretch min-vh-100">
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <h1 class="mb-4">{% trans "Forum" %}</h1>
+
+            <!-- Site Description -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">저희 포럼에 오신 것을 환영합니다!</h5>
+                    <p class="card-text">이곳은 음악 및 다양한 주제에 대한 생각, 질문, 토론을 나눌 수 있는 커뮤니티 공간입니다. 기존 토론을 살펴보거나 새로운 토론을 시작해보세요!</p>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <p class="lead">{% trans "No categories yet." %}</p>
-                        <p>{% trans "Be the first to create a thread!" %}</p>
-                    </div>
+
+            <!-- Create New Thread Button -->
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'forum:create_thread' %}" class="btn btn-primary">{% trans "Create New Thread" %}</a>
+            </div>
+
+            <!-- All Threads List -->
+            <h2 class="mb-3">{% trans "All Threads" %}</h2>
+            <ul class="list-group mb-3" id="threads-list">
+                {% for thread in threads %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{% url 'forum:post_list' thread.id %}">{{ thread.title }}</a>
+                            <small class="text-muted d-block">{% trans "Category:" %} {{ thread.category.name }} | {% trans "by" %} {{ thread.author.username }} | {{ thread.created_at|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ thread.posts.count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item" id="no-threads-message">{% trans "No threads yet. Be the first to create one!" %}</li>
+                {% endfor %}
+            </ul>
+            <div id="loading-indicator" class="text-center" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Sidebar Area (Categories) -->
+        <div class="col-md-3 sidebar-column">
+            <div class="card category-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">카테고리</h5>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'forum:create_category' %}" class="btn btn-sm btn-success">{% trans "Create" %}</a>
+                        {% endif %}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for category in categories %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'forum:thread_list' category.id %}" class="flex-grow-1 me-2">{{ category.name }}</a>
+                                {% if user.is_superuser %}
+                                    <div class="btn-group" role="group" aria-label="Category actions">
+                                        <a href="{% url 'forum:edit_category' category.id %}" class="btn btn-sm btn-outline-primary">{% trans "Edit" %}</a>
+                                        <a href="{% url 'forum:delete_category' category.id %}" class="btn btn-sm btn-outline-danger">{% trans "Delete" %}</a>
+                                    </div>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">{% trans "No categories available." %}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <style>
+        .sidebar-column {
+            background-color: #f8f9fa; /* Light background for the sidebar column */
+            padding-left: 15px; /* Match container padding */
+            padding-right: 15px; /* Match container padding */
+        }
+
+        .sidebar-column .card {
+            height: 100%; /* Make the card fill the sidebar area */
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow-y: auto; /* Allow internal scrolling if content overflows */
+        }
+
+        .sidebar-column .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sidebar-column .list-group-item {
+            padding: 0.75rem 1.25rem;
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+        }
+
+        .sidebar-column .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-column .list-group-item a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .sidebar-column .list-group-item a:hover {
+            color: #007bff;
+        }
+
+        .sidebar-column .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 767.98px) {
+            .sidebar-column {
+                padding-left: 0;
+                padding-right: 0;
+                margin-top: 1rem; /* Add some space below main content */
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentPage = {{ current_page_number }};
+            let hasNext = {{ has_next_page|yesno:"true,false" }};
+            let isLoading = false;
+            const threadsList = document.getElementById('threads-list');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const noThreadsMessage = document.getElementById('no-threads-message');
+
+            // Get translated strings from Django for JavaScript
+            const translatedStrings = {
+                category: "{% trans "Category:" %}",
+                by: "{% trans "by" %}"
+            };
+
+            function loadMoreThreads() {
+                if (!hasNext || isLoading) return;
+
+                isLoading = true;
+                loadingIndicator.style.display = 'block';
+
+                currentPage++;
+                fetch(`?page=${currentPage}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    isLoading = false;
+                    loadingIndicator.style.display = 'none';
+                    hasNext = data.has_next;
+
+                    if (data.threads.length === 0 && currentPage === 1) {
+                        if (noThreadsMessage) noThreadsMessage.style.display = 'block';
+                    } else if (data.threads.length > 0 && noThreadsMessage) {
+                        noThreadsMessage.style.display = 'none';
+                    }
+
+                    data.threads.forEach(thread => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        
+                        // Ensure post_count is displayed correctly (0 if no posts)
+                        const postCount = thread.post_count !== undefined ? thread.post_count : 0;
+
+                        listItem.innerHTML = `
+                            <div>
+                                <a href="/forum/thread/${thread.id}/">${thread.title}</a>
+                                <small class="text-muted d-block">${translatedStrings.category} ${thread.category_name} | ${translatedStrings.by} ${thread.author_username} | ${thread.created_at}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">${postCount}</span>
+                        `;
+                        threadsList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading more threads:', error);
+                    isLoading = false;
+                    loadingIndicator.style.display = 'none';
+                });
+            }
+
+            // Initial check if there are enough threads to scroll
+            // Only load more if the initial page is not full and there are more pages
+            if (threadsList.scrollHeight <= threadsList.clientHeight && hasNext && currentPage === 1) {
+                loadMoreThreads();
+            }
+
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && hasNext && !isLoading) {
+                    loadMoreThreads();
+                }
+            });
+
+            // If there are no threads initially, try to load more if hasNext is true
+            if (threadsList.children.length === 0 && hasNext) {
+                loadMoreThreads();
+            }
+        });
+    </script>
 {% endblock %}

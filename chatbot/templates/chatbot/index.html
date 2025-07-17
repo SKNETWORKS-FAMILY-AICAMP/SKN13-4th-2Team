@@ -46,6 +46,66 @@
     #recommendations-log .card {
         background-color: #fafafa;
     }
+    .spotify-embed-container {
+        margin-bottom: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .spotify-embed-container iframe {
+        width: 100%;
+        height: 80px; /* Compact player height */
+        border: none;
+    }
+
+    /* New styles for recommendations */
+    .recommendation-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .recommendation-card:hover {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .recommendation-card .card-body {
+        padding: 15px;
+    }
+    .album-art-container img {
+        width: 60px; /* Slightly larger album art */
+        height: 60px;
+        border-radius: 8px; /* Slightly rounded corners for album art */
+        object-fit: cover;
+    }
+    .track-title {
+        font-size: 1rem; /* Adjust font size */
+        font-weight: 600; /* Make title bolder */
+        color: #333;
+    }
+    .track-artist {
+        font-size: 0.85rem; /* Adjust font size */
+        color: #666;
+    }
+    .track-actions .form-check-input {
+        width: 1.2em; /* Larger checkbox */
+        height: 1.2em;
+        cursor: pointer;
+    }
+    .play-button {
+        background-color: #1DB954; /* Spotify green */
+        border-color: #1DB954;
+        color: white;
+        border-radius: 20px; /* Pill shape */
+        padding: 5px 15px;
+        font-size: 0.85rem;
+        transition: background-color 0.2s ease;
+    }
+    .play-button:hover {
+        background-color: #1ED760;
+        border-color: #1ED760;
+    }
 </style>
 
 <div class="row">
@@ -65,9 +125,15 @@
     <div class="col-md-5">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{% trans "Recommended Music" %}</h5>
-                <div id="recommendations-log" style="max-height: 65vh; overflow-y: auto;">
-                    <p class="text-muted">{% trans "Recommendations will appear here." %}</p>
+                <h5 class="card-title">추천 음악</h5>
+                
+                <!-- Spotify Embed Player -->
+                <div class="spotify-embed-container">
+                    <iframe id="spotify-embed-player" src="" allow="encrypted-media"></iframe>
+                </div>
+
+                <div id="recommendations-log" style="max-height: 45vh; overflow-y: auto;"> <!-- Adjusted max-height -->
+                    <p class="text-muted">추천 음악이 여기에 표시됩니다.</p>
                 </div>
                 <div class="mt-3 text-center">
                     <button class="btn btn-success" id="create-playlist-btn" style="display: none;">{% trans "Create Playlist with Selected" %}</button>
@@ -82,6 +148,42 @@
     const chatMessageInput = document.querySelector('#chat-message-input');
     const chatMessageSubmit = document.querySelector('#chat-message-submit');
     const recommendationsLog = document.querySelector('#recommendations-log');
+    const spotifyEmbedPlayer = document.getElementById('spotify-embed-player');
+
+    // Function to record listening history
+    function recordListeningHistory(spotifyId, title, artist, trackUrl) {
+        fetch('{% url "mypage:record_listening_history" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'X-CSRFToken': getCookie('csrftoken') // Uncomment and implement getCookie if not using @csrf_exempt
+            },
+            body: JSON.stringify({
+                spotify_id: spotifyId,
+                title: title,
+                artist: artist,
+                track_url: trackUrl
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Listening history recorded successfully!');
+            } else {
+                console.error('Failed to record listening history:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error recording listening history:', error);
+        });
+    }
+
+    // Function to play track in embed player
+    function playTrackInEmbed(spotifyId, title, artist, trackUrl) {
+        const embedUrl = `https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator`;
+        spotifyEmbedPlayer.src = embedUrl;
+        recordListeningHistory(spotifyId, title, artist, trackUrl); // Record history when played in embed
+    }
 
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const chatSocket = new WebSocket(
@@ -112,30 +214,34 @@
         if (sender === 'bot' && recommendations.length > 0) {
             recommendationsLog.innerHTML = ''; // Clear previous recommendations
             let recommendationsHtml = ''; // Use a temporary string to build HTML
+
+            // Automatically play the first recommended track in the embed player
+            if (recommendations.length > 0) {
+                const firstTrack = recommendations[0];
+                playTrackInEmbed(firstTrack.id, firstTrack.name, firstTrack.artist, firstTrack.url);
+            }
+
             recommendations.forEach(track => {
                 let albumImageHtml = '';
                 if (track.album_image_url) {
-                    albumImageHtml = `<img src="${track.album_image_url}" alt="Album Art" class="img-fluid mb-2" style="max-width: 100px; height: auto;">`;
+                    albumImageHtml = `<div class="album-art-container me-3"><img src="${track.album_image_url}" alt="Album Art"></div>`;
                 }
                 recommendationsHtml += `
-                    <div class="card mb-2">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center"> <!-- Left side: Checkbox + Text Content -->
+                    <div class="card mb-3 recommendation-card">
+                        <div class="card-body d-flex align-items-center">
+                            ${albumImageHtml}
+                            <div class="flex-grow-1">
+                                <h6 class="track-title mb-0">${track.name}</h6>
+                                <p class="track-artist mb-0">${track.artist}</p>
+                            </div>
+                            <div class="track-actions d-flex align-items-center ms-3">
                                 <input class="form-check-input track-checkbox me-2" type="checkbox" value="" id="track-${track.id}"
                                     data-track-id="${track.id}"
                                     data-track-name="${track.name}"
                                     data-track-artist="${track.artist}"
                                     data-track-url="${track.url}"
                                     data-album-image-url="${track.album_image_url || ''}">
-                                <div> <!-- Text Content -->
-                                    <h6 class="card-title mb-0">${track.name}</h6>
-                                    <p class="card-text mb-0 text-muted">${track.artist}</p>
-                                </div>
-                            </div>
-                            <div class="image-content ms-3"> <!-- Right side: Image -->
-                                <a href="${track.url}" target="_blank"> <!-- 앨범 이미지를 링크로 감쌉니다. -->
-                                    ${albumImageHtml}
-                                </a>
+                                <button class="btn btn-sm play-button" onclick="playTrackInEmbed('${track.id}', '${track.name}', '${track.artist}', '${track.url}');">{% trans "Play" %}</button>
                             </div>
                         </div>
                     </div>

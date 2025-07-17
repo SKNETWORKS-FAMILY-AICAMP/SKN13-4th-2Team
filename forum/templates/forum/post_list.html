@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">{{ post.author.username }} <small class="float-end">{{ post.created_at|date:"Y-m-d H:i" }}</small></h6>
                     <p class="card-text">{{ post.content }}</p>
-                    {% if user.is_authenticated and user == post.author %}
+                    {% if user.is_authenticated and user == post.author or user.is_authenticated and user.is_superuser %}
                         <div class="mt-2">
                             <a href="{% url 'forum:post_edit' post.id %}" class="btn btn-sm btn-outline-primary">{% trans "Edit" %}</a>
                             <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal-{{ post.id }}">
@@ -27,17 +27,17 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModalLabel-{{ post.id }}">{% trans "Confirm Deletion" %}</h5>
+                            <h5 class="modal-title" id="deleteModalLabel-{{ post.id }}">삭제 확인</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            {% blocktrans with post_author=post.author.username %}Are you sure you want to delete this post by {{ post_author }}?{% endblocktrans %}
+                            {% blocktrans with post_author=post.author.username %}{{ post_author }} 님의 게시글을 정말로 삭제하시겠습니까?{% endblocktrans %}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                             <form action="{% url 'forum:post_delete' post.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                                <button type="submit" class="btn btn-danger">삭제</button>
                             </form>
                         </div>
                     </div>

@@ -35,14 +35,14 @@ class Track(models.Model):
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
     spotify_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    track_url = models.URLField(max_length=500, blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} - {self.artist}"
 
 class ListeningHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listening_history')
-    song_title = models.CharField(max_length=255)
-    artist = models.CharField(max_length=255, blank=True)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE, related_name='listening_records', null=True, blank=True)
     listened_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -50,4 +50,4 @@ class ListeningHistory(models.Model):
         verbose_name_plural = "Listening Histories"
 
     def __str__(self):
-        return f'{self.song_title} by {self.artist} ({self.user.username})'
+        return f'{self.track.title} by {self.track.artist} ({self.user.username})'

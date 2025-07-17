@@ -11,8 +11,8 @@ class PlaylistAdmin(admin.ModelAdmin):
     list_filter = ('user',)
 
 class ListeningHistoryAdmin(admin.ModelAdmin):
-    list_display = ('user', 'song_title', 'listened_at')
-    search_fields = ('user__username', 'song_title')
+    list_display = ('user', 'track', 'listened_at')
+    search_fields = ('user__username', 'track__title', 'track__artist')
     list_filter = ('user',)
 
 admin.site.register(Profile, ProfileAdmin)

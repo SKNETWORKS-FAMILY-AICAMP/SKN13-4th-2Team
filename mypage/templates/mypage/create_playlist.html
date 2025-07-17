@@ -2,15 +2,161 @@
 {% load i18n %}
 
 {% block content %}
-    <h2 class="mb-4">{% trans "Create New Playlist" %}</h2>
-    <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">{% trans "Create Playlist" %}</button>
-                <a href="{% url 'mypage:index' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
-            </form>
+    <h2 class="mb-4">새 플레이리스트 만들기</h2>
+    
+    <form id="playlist-form" method="post">
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">플레이리스트 정보</h5>
+                <div class="form-floating mb-3">
+                    {{ form.name }}
+                    <label for="{{ form.name.id_for_label }}">플레이리스트 이름</label>
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.description }}
+                    <label for="{{ form.description.id_for_label }}">설명</label>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">곡 추가</h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="track-search-input" placeholder="곡 검색...">
+                    <button class="btn btn-outline-secondary" type="button" id="track-search-btn">검색</button>
+                </div>
+                <div id="search-results" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 5px;">
+                    <!-- Search results will be loaded here -->
+                    <p class="text-muted text-center">검색 결과가 여기에 표시됩니다.</p>
+                </div>
+                <h6 class="mt-3">선택된 곡</h6>
+                <ul class="list-group" id="selected-tracks-list">
+                    <!-- Selected tracks will be listed here -->
+                    <p class="text-muted text-center">아직 선택된 곡이 없습니다.</p>
+                </ul>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">플레이리스트 생성</button>
+        <a href="{% url 'mypage:index' %}" class="btn btn-secondary">취소</a>
+    </form>
+
+    <script id="selected-tracks-json" type="application/json">
+        []
+    </script>
+
+    <script>
+        const trackSearchInput = document.getElementById('track-search-input');
+        const trackSearchBtn = document.getElementById('track-search-btn');
+        const searchResultsDiv = document.getElementById('search-results');
+        const selectedTracksList = document.getElementById('selected-tracks-list');
+        const playlistForm = document.getElementById('playlist-form');
+
+        let selectedTracks = JSON.parse(document.getElementById('selected-tracks-json').textContent) || []; // Initialize with empty array
+
+        // Function to render selected tracks
+        function renderSelectedTracks() {
+            selectedTracksList.innerHTML = '';
+            if (selectedTracks.length === 0) {
+                selectedTracksList.innerHTML = '<p class="text-muted text-center">아직 선택된 곡이 없습니다.</p>';
+                return;
+            }
+            selectedTracks.forEach(track => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        ${track.album_image_url ? `<img src="${track.album_image_url}" alt="앨범 아트" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">` : ''}
+                        <div>
+                            <strong>${track.name}</strong><br>
+                            <small>${track.artist}</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-track-btn" data-track-id="${track.id}">제거</button>
+                `;
+                selectedTracksList.appendChild(listItem);
+            });
+            // Add event listeners for remove buttons
+            document.querySelectorAll('.remove-track-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const trackIdToRemove = this.dataset.trackId;
+                    selectedTracks = selectedTracks.filter(track => track.id !== trackIdToRemove);
+                    renderSelectedTracks();
+                });
+            });
+        }
+
+        // Function to add track to selected list
+        function addTrackToSelected(track) {
+            if (!selectedTracks.some(t => t.id === track.id)) {
+                selectedTracks.push(track);
+                renderSelectedTracks();
+            }
+        }
+
+        // Search for tracks
+        trackSearchBtn.addEventListener('click', function() {
+            console.log('Search button clicked!');
+            const query = trackSearchInput.value.trim();
+            if (query.length < 2) {
+                searchResultsDiv.innerHTML = '<p class="text-muted text-center">검색하려면 최소 2자 이상 입력해주세요.</p>';
+                return;
+            }
+            searchResultsDiv.innerHTML = '<p class="text-muted text-center">검색 중...</p>';
+            fetch(`{% url "mypage:search_spotify_tracks" %}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResultsDiv.innerHTML = '';
+                    if (data.tracks && data.tracks.length > 0) {
+                        data.tracks.forEach(track => {
+                            const trackDiv = document.createElement('div');
+                            trackDiv.className = 'd-flex align-items-center mb-2 p-2 border rounded';
+                            trackDiv.innerHTML = `
+                                ${track.album_image_url ? `<img src="${track.album_image_url}" alt="앨범 아트" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">` : ''}
+                                <div class="flex-grow-1">
+                                    <strong>${track.name}</strong><br>
+                                    <small>${track.artist}</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-success add-track-btn" data-track-id="${track.id}" data-track-name="${track.name}" data-track-artist="${track.artist}" data-track-url="${track.url}" data-album-image-url="${track.album_image_url || ''}">추가</button>
+                            `;
+                            searchResultsDiv.appendChild(trackDiv);
+                        });
+                        // Add event listeners for add buttons
+                        document.querySelectorAll('.add-track-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                addTrackToSelected({
+                                    id: this.dataset.trackId,
+                                    name: this.dataset.trackName,
+                                    artist: this.dataset.trackArtist,
+                                    url: this.dataset.trackUrl,
+                                    album_image_url: this.dataset.albumImageUrl
+                                });
+                            });
+                        });
+                    } else {
+                        searchResultsDiv.innerHTML = '<p class="text-muted text-center">곡을 찾을 수 없습니다.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching tracks:', error);
+                    searchResultsDiv.innerHTML = '<p class="text-danger text-center">곡 검색 중 오류가 발생했습니다.</p>';
+                });
+        });
+
+        // Handle form submission to include selected tracks
+        playlistForm.addEventListener('submit', function(event) {
+            // Create a single hidden input for the JSON string of selected tracks
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_tracks_json';
+            hiddenInput.value = JSON.stringify(selectedTracks);
+            playlistForm.appendChild(hiddenInput);
+        });
+
+        // Initial render of selected tracks (for edit page)
+        renderSelectedTracks();
+    </script>
 {% endblock %}

@@ -21,7 +21,7 @@
         <div class="card mt-4">
             <div class="card-body">
                 <h5 class="card-title">{% trans "Listening History" %}</h5>
-                <p class="card-text">{% trans "Check out the music you've recently enjoyed." %}</p>
+                <p class="card-text">최근 감상한 음악을 확인해보세요.</p>
                 <a href="{% url 'mypage:listening_history' %}" class="btn btn-primary">{% trans "View History" %}</a>
             </div>
         </div>
@@ -33,35 +33,35 @@
         </div>
         <div class="list-group">
             {% for playlist in playlists %}
-                <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <div>
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="flex-grow-1 me-3 text-decoration-none text-dark">
                         <h6 class="mb-1">{{ playlist.name }}</h6>
                         <small class="text-muted">{% blocktrans count counter=playlist.track_count %}{{ counter }} track{% plural %}{{ counter }} tracks{% endblocktrans %}</small>
-                    </div>
-                    <div>
-                        <a href="{% url 'mypage:edit_playlist' playlist.id %}" class="btn btn-sm btn-outline-info me-2">{% trans "Edit" %}</a>
+                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'mypage:edit_playlist' playlist.id %}" class="btn btn-sm btn-outline-secondary">{% trans "Edit" %}</a>
                         <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deletePlaylistModal-{{ playlist.id }}">
                             {% trans "Delete" %}
                         </button>
                     </div>
-                </a>
+                </div>
 
                 <!-- Delete Confirmation Modal -->
                 <div class="modal fade" id="deletePlaylistModal-{{ playlist.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ playlist.id }}" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="deleteModalLabel-{{ playlist.id }}">{% trans "Confirm Deletion" %}</h5>
+                                <h5 class="modal-title" id="deleteModalLabel-{{ playlist.id }}">삭제 확인</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                {% blocktrans with playlist_name=playlist.name %}Are you sure you want to delete the playlist "{{ playlist_name }}"?{% endblocktrans %}
+                                플레이리스트 "<strong>{{ playlist.name }}</strong>"을(를) 정말로 삭제하시겠습니까?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                                 <form action="{% url 'mypage:delete_playlist' playlist.id %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                                    <button type="submit" class="btn btn-danger">삭제</button>
                                 </form>
                             </div>
                         </div>
