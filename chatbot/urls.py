@@ -5,4 +5,5 @@ app_name = 'chatbot'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('youtube_search/', views.youtube_search, name='youtube_search'),
 ]

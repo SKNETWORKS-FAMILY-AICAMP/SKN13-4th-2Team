@@ -24,11 +24,20 @@ class Playlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='playlists')
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    tracks = models.ManyToManyField('Track', related_name='playlists', blank=True) # Add this line
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
+
+class Track(models.Model):
+    title = models.CharField(max_length=255)
+    artist = models.CharField(max_length=255)
+    spotify_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.artist}"
 
 class ListeningHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listening_history')

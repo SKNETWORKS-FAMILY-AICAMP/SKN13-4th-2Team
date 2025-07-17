@@ -8,6 +8,9 @@ from .forms import ProfileForm, PlaylistForm
 def index(request):
     user_profile = request.user.profile
     playlists = Playlist.objects.filter(user=request.user).order_by('-created_at')
+    # Calculate track count for each playlist
+    for playlist in playlists:
+        playlist.track_count = playlist.tracks.count() # Explicitly get the count
     return render(request, 'mypage/index.html', {'user_profile': user_profile, 'playlists': playlists})
 
 @login_required

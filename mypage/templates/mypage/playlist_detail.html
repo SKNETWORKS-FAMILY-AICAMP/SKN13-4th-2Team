@@ -8,6 +8,24 @@
     <p><strong>{% trans "Created at" %}:</strong> {{ playlist.created_at }}</p>
     <p><strong>{% trans "Last updated" %}:</strong> {{ playlist.updated_at }}</p>
 
+    <h3 class="mt-5">{% trans "Tracks in this Playlist" %}</h3>
+    {% if playlist.tracks.all %}
+        <ul class="list-group">
+            {% for track in playlist.tracks.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ track.title }}</strong> - {{ track.artist }}
+                    </div>
+                    {% if track.spotify_id %}
+                        <a href="https://open.spotify.com/track/{{ track.spotify_id }}" target="_blank" class="btn btn-sm btn-success">{% trans "Listen on Spotify" %}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% trans "No tracks in this playlist yet." %}</p>
+    {% endif %}
+
     <div class="mt-4">
         <a href="{% url 'mypage:edit_playlist' playlist.id %}" class="btn btn-primary">{% trans "Edit Playlist" %}</a>
         <!-- Delete button to trigger modal -->

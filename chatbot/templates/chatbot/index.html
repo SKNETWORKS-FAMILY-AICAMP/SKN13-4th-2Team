@@ -2,98 +2,223 @@
 {% load i18n %}
 
 {% block content %}
-    <h1 class="mb-4">{% trans "Music Chatbot" %}</h1>
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="chat-window" id="chat-log" style="border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; margin-bottom: 10px;">
+<style>
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 75vh;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .chat-log {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+    }
+    .chat-message {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-message .message-bubble {
+        padding: 10px 15px;
+        border-radius: 18px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+    .chat-message.user .message-bubble {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+    }
+    .chat-message.bot .message-bubble {
+        background-color: #e9e9eb;
+        color: #333;
+        align-self: flex-start;
+    }
+    .chat-input-container {
+        padding: 20px;
+        border-top: 1px solid #ddd;
+    }
+    #recommendations-log .card {
+        background-color: #fafafa;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="chat-container">
+            <div class="chat-log" id="chat-log">
                 <!-- Chat messages will appear here -->
             </div>
-            <div class="input-group">
-                <input type="text" class="form-control" id="chat-message-input" placeholder="{% trans "Type your message here..." %}">
-                <button class="btn btn-primary" id="chat-message-submit">{% trans "Send" %}</button>
+            <div class="chat-input-container">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="chat-message-input" placeholder="{% trans "Type your message here..." %}">
+                    <button class="btn btn-primary" id="chat-message-submit">{% trans "Send" %}</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% trans "Recommended Music / Filters" %}</h2>
-            <div id="recommendations-log">
-                <p class="card-text">{% trans "Placeholder for recommended songs/playlists or filter options (e.g., Mood, Genre)." %}</p>
-                <!-- Recommended items or filter UI will appear here -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{% trans "Recommended Music" %}</h5>
+                <div id="recommendations-log" style="max-height: 65vh; overflow-y: auto;">
+                    <p class="text-muted">{% trans "Recommendations will appear here." %}</p>
+                </div>
+                <div class="mt-3 text-center">
+                    <button class="btn btn-success" id="create-playlist-btn" style="display: none;">{% trans "Create Playlist with Selected" %}</button>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const chatLog = document.querySelector('#chat-log');
-        const chatMessageInput = document.querySelector('#chat-message-input');
-        const chatMessageSubmit = document.querySelector('#chat-message-submit');
-        const recommendationsLog = document.querySelector('#recommendations-log');
+<script>
+    const chatLog = document.querySelector('#chat-log');
+    const chatMessageInput = document.querySelector('#chat-message-input');
+    const chatMessageSubmit = document.querySelector('#chat-message-submit');
+    const recommendationsLog = document.querySelector('#recommendations-log');
 
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const chatSocket = new WebSocket(
-            protocol +
-            window.location.host +
-            '/ws/chat/'
-        );
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const chatSocket = new WebSocket(
+        protocol +
+        window.location.host +
+        '/ws/chat/'
+    );
 
-        chatSocket.onopen = function(e) {
-            // Send an initial message to get the bot's greeting
-            chatSocket.send(JSON.stringify({
-                'message': 'Hello' // Or any initial greeting
-            }));
-        };
+    chatSocket.onopen = function(e) {
+    };
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const message = data.message;
-            const sender = data.sender;
-            const recommendations = data.recommendations || [];
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const message = data.message;
+        const sender = data.sender;
+        const recommendations = data.recommendations || [];
 
-            if (sender === 'bot') {
-                chatLog.innerHTML += '<p><strong>{% trans "Bot" %}:</strong> ' + message + '</p>';
-                if (recommendations.length > 0) {
-                    recommendationsLog.innerHTML = '<h5 class="mt-3">{% trans "Recommendations" %}:</h5>';
-                    recommendations.forEach(track => {
-                        recommendationsLog.innerHTML += `
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <h6 class="card-title">${track.name}</h6>
-                                    <p class="card-text">${track.artist}</p>
-                                    <a href="${track.url}" target="_blank" class="btn btn-sm btn-success">{% trans "Listen on Spotify" %}</a>
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', sender);
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.classList.add('message-bubble');
+        bubbleDiv.textContent = message;
+        messageDiv.appendChild(bubbleDiv);
+        
+        chatLog.appendChild(messageDiv);
+
+        if (sender === 'bot' && recommendations.length > 0) {
+            recommendationsLog.innerHTML = ''; // Clear previous recommendations
+            let recommendationsHtml = ''; // Use a temporary string to build HTML
+            recommendations.forEach(track => {
+                let albumImageHtml = '';
+                if (track.album_image_url) {
+                    albumImageHtml = `<img src="${track.album_image_url}" alt="Album Art" class="img-fluid mb-2" style="max-width: 100px; height: auto;">`;
+                }
+                recommendationsHtml += `
+                    <div class="card mb-2">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center"> <!-- Left side: Checkbox + Text Content -->
+                                <input class="form-check-input track-checkbox me-2" type="checkbox" value="" id="track-${track.id}"
+                                    data-track-id="${track.id}"
+                                    data-track-name="${track.name}"
+                                    data-track-artist="${track.artist}"
+                                    data-track-url="${track.url}"
+                                    data-album-image-url="${track.album_image_url || ''}">
+                                <div> <!-- Text Content -->
+                                    <h6 class="card-title mb-0">${track.name}</h6>
+                                    <p class="card-text mb-0 text-muted">${track.artist}</p>
                                 </div>
                             </div>
-                        `;
-                    });
-                } else {
-                    recommendationsLog.innerHTML = '<p class="card-text">{% trans "No recommendations found." %}</p>';
-                }
+                            <div class="image-content ms-3"> <!-- Right side: Image -->
+                                <a href="${track.url}" target="_blank"> <!-- 앨범 이미지를 링크로 감쌉니다. -->
+                                    ${albumImageHtml}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            recommendationsLog.innerHTML = recommendationsHtml;
+            // Show the create playlist button if there are recommendations
+            if (recommendations.length > 0) {
+                document.getElementById('create-playlist-btn').style.display = 'block';
+            } else {
+                document.getElementById('create-playlist-btn').style.display = 'none';
             }
-            chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to bottom
-        };
+        }
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
 
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
+    // ... (existing onclose, focus, onkeyup) ...
 
-        chatMessageInput.focus();
-        chatMessageInput.onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                chatMessageSubmit.click();
-            }
-        };
+    const createPlaylistBtn = document.getElementById('create-playlist-btn');
+    createPlaylistBtn.onclick = function() {
+        const selectedTracks = [];
+        document.querySelectorAll('.track-checkbox:checked').forEach(checkbox => {
+            selectedTracks.push({
+                id: checkbox.dataset.trackId,
+                name: checkbox.dataset.trackName,
+                artist: checkbox.dataset.trackArtist,
+                url: checkbox.dataset.trackUrl,
+                album_image_url: checkbox.dataset.albumImageUrl
+            });
+        });
 
-        chatMessageSubmit.onclick = function(e) {
-            const message = chatMessageInput.value;
-            if (message.trim() === '') return; // Prevent sending empty messages
+        if (selectedTracks.length === 0) {
+            alert('플레이리스트에 추가할 노래를 선택해주세요.');
+            return;
+        }
 
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            chatLog.innerHTML += '<p><strong>{% trans "You" %}:</strong> ' + message + '</p>'; // Display user's message immediately
-            chatMessageInput.value = '';
-            chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to bottom
-        };
-    </script>
+        // 사용자에게 플레이리스트 이름 입력받기
+        const playlistName = prompt('새 플레이리스트의 이름을 입력해주세요:', '새 플레이리스트');
+        if (playlistName === null || playlistName.trim() === '') {
+            alert('플레이리스트 이름이 입력되지 않았습니다. 생성을 취소합니다.');
+            return; // 사용자가 취소했거나 빈 이름을 입력한 경우
+        }
+
+        // 선택된 트랙과 플레이리스트 이름을 백엔드로 전송
+        chatSocket.send(JSON.stringify({
+            'type': 'create_playlist_request',
+            'playlist_name': playlistName, // 플레이리스트 이름 추가
+            'tracks': selectedTracks
+        }));
+        alert(`'${playlistName}' 플레이리스트 생성 요청을 보냈습니다.`);
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    chatMessageInput.focus();
+    chatMessageInput.onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            chatMessageSubmit.click();
+        }
+    };
+
+    chatMessageSubmit.onclick = function(e) {
+        const message = chatMessageInput.value;
+        if (message.trim() === '') return;
+
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', 'user');
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.classList.add('message-bubble');
+        bubbleDiv.textContent = message;
+        messageDiv.appendChild(bubbleDiv);
+        
+        chatLog.appendChild(messageDiv);
+        
+        chatMessageInput.value = '';
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+</script>
 {% endblock %}
