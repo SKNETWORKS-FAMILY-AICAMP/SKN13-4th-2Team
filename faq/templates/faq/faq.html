@@ -1,0 +1,59 @@
+<!-- templates/faq/faq.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2>자주 묻는 질문 (FAQ)</h2>
+
+  <div class="accordion mt-4" id="faqAccordion">
+    {% for faq in page_obj %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}"
+                  aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-controls="collapse{{ forloop.counter }}">
+            {{ faq.question }}
+          </button>
+        </h2>
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+             aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            {{ faq.answer|linebreaks }}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>FAQ가 없습니다.</p>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ 페이지 네비게이션 -->
+  <nav aria-label="FAQ 페이지">
+    <ul class="pagination justify-content-center mt-4">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">이전</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">이전</span></li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">다음</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">다음</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}

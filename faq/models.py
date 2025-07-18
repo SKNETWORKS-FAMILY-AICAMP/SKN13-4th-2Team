@@ -7,3 +7,5 @@ class FAQ(models.Model):
 
     def __str__(self):
         return self.question
+    
+    from django.db import models
