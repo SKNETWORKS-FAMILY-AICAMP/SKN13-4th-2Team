@@ -93,6 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -179,6 +180,7 @@ CHANNEL_LAYERS = {
 # Spotify API Settings
 SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID') # Replace with your Spotify Client ID
 SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 SOCIALACCOUNT_PROVIDERS ={
 "google":{

@@ -2,23 +2,23 @@
 {% load i18n %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto py-8 px-4">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex justify-center items-center min-h-screen py-10">
+  <div class="bg-[#2A2A2A] p-8 rounded-xl shadow-2xl max-w-screen-xl w-full min-h-[80vh] flex-grow flex flex-col">
+    <div class="max-w-5xl mx-auto px-4 flex-grow">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow">
     <!-- Profile & History (왼쪽) -->
-    <div class="space-y-6">
-      <div class="bg-[#232323] rounded-xl p-6 flex flex-col items-center shadow">
+    <div class="space-y-6 h-full flex flex-col">
+      <div class="bg-[#232323] rounded-xl p-6 flex flex-col items-center shadow flex-grow">
         {% if user_profile.avatar %}
           <img src="{{ user_profile.avatar.url }}" alt="프로필" class="w-32 h-32 rounded-full mb-3 object-cover border-4 border-teal-500">
         {% else %}
-          <div class="w-32 h-32 rounded-full bg-gray-700 mb-3 flex items-center justify-center text-gray-400 text-xl">
-            {% trans "No Avatar" %}
-          </div>
+          <img src="{{ MEDIA_URL }}avatars/default_avatar.png" alt="기본 프로필" class="w-32 h-32 rounded-full mb-3 object-cover border-4 border-gray-600">
         {% endif %}
         <div class="text-xl font-semibold text-white">{{ user.username }}</div>
         <div class="text-teal-400 text-sm mb-2">{{ user_profile.nickname }}</div>
         <a href="{% url 'mypage:profile_edit' %}" class="inline-block bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition">프로필 수정</a>
       </div>
-      <div class="bg-[#232323] rounded-xl p-6 shadow">
+      <div class="bg-[#232323] rounded-xl p-6 shadow flex-grow">
         <div class="font-semibold text-white mb-1">최근 감상 내역</div>
         <div class="text-gray-400 mb-3">최근 감상한 음악을 확인해보세요.</div>
         <a href="{% url 'mypage:listening_history' %}" class="inline-block bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded transition">감상 내역 보기</a>
@@ -26,13 +26,13 @@
     </div>
 
     <!-- Playlist List (오른쪽) -->
-    <div class="md:col-span-2 flex flex-col">
+    <div class="md:col-span-2 flex flex-col h-full">
       <div class="flex justify-between items-center mb-5">
         <div class="text-2xl font-bold text-white">{% trans "My Playlists" %}</div>
         <a href="{% url 'mypage:create_playlist' %}" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg font-medium">+ 새 플레이리스트</a>
       </div>
       {% if playlists %}
-        <div class="space-y-4">
+        <div class="space-y-4 flex-1 overflow-y-auto">
           {% for playlist in playlists %}
             <div class="flex items-center bg-[#232323] rounded-xl px-5 py-4 shadow group justify-between">
               <a href="{% url 'mypage:playlist_detail' playlist.id %}" class="flex-1">
@@ -71,12 +71,16 @@
           {% endfor %}
         </div>
       {% else %}
-        <div class="text-center text-gray-400 py-16">
+        <div class="text-center text-gray-400 py-16 flex-1 flex items-center justify-center">
           <div class="text-2xl mb-2">{% trans "No playlists created yet." %}</div>
           <div>{% trans "Start by creating your first playlist!" %}</div>
         </div>
       {% endif %}
     </div>
+  </div>
+</div>
+  </div>
+</div>
   </div>
 </div>
 

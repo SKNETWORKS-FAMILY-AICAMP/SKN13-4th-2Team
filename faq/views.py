@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def faq_page(request):
     faq_list = FAQ.objects.all()
-    paginator = Paginator(faq_list, 10)  # ✅ 페이지당 10개씩
+    paginator = Paginator(faq_list, 5)  # ✅ 페이지당 5개씩
 
     page_number = request.GET.get('page')  # ?page=2 같은 URL 처리
     page_obj = paginator.get_page(page_number)

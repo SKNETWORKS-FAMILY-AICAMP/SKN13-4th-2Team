@@ -2,11 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto py-10">
+<div class="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto py-10 min-h-screen items-center">
 
   <!-- 채팅 영역 -->
   <div class="w-full md:w-2/3">
-    <div class="bg-[#232323] rounded-xl shadow-lg flex flex-col h-[70vh]">
+    <div class="bg-[#232323] rounded-xl shadow-lg flex flex-col h-[90vh]">
       <!-- 채팅 로그 -->
       <div id="chat-log" class="flex-1 p-6 overflow-y-auto space-y-4">
         <!-- 채팅 메시지가 여기에 표시됩니다. -->
@@ -29,14 +29,14 @@
   </div>
 
   <!-- 검색 음악 영역 -->
-  <div class="w-full md:w-1/3 flex flex-col gap-4">
-    <div class="bg-[#232323] rounded-xl shadow-lg p-5 flex flex-col gap-4">
+  <div class="w-full md:w-1/3 flex flex-col gap-4 h-[90vh]">
+    <div class="bg-[#232323] rounded-xl shadow-lg p-5 flex flex-col gap-4 h-full">
       <h3 class="text-lg font-bold mb-1">검색된 음악</h3>
       <!-- Spotify 플레이어 -->
       <div class="rounded-lg overflow-hidden bg-black mb-2">
         <iframe id="spotify-embed-player" src="" class="w-full h-20 border-0"></iframe>
       </div>
-      <div id="recommendations-log" class="space-y-3 max-h-72 overflow-y-auto">
+      <div id="recommendations-log" class="space-y-3 flex-1 overflow-y-auto">
         <p class="text-gray-400">검색된 음악이 여기에 표시됩니다.</p>
       </div>
       <button id="create-playlist-btn"
@@ -103,8 +103,7 @@ chatSocket.onmessage = function(e) {
     const recommendations = data.recommendations || [];
 
     const messageDiv = document.createElement('div');
-    messageDiv.classList.add('flex', 'flex-col', 'gap-1', 'max-w-xl');
-    messageDiv.classList.add(sender === 'user' ? 'items-end' : 'items-start');
+    messageDiv.classList.add('flex', 'gap-1', 'mb-4', 'w-full', 'justify-start');
 
     const bubbleDiv = document.createElement('div');
     bubbleDiv.classList.add('px-4', 'py-2', 'rounded-2xl', 'max-w-[80%]', 'break-words', 'shadow');
@@ -214,7 +213,7 @@ chatMessageSubmit.onclick = function(e) {
     }));
 
     const messageDiv = document.createElement('div');
-    messageDiv.classList.add('flex', 'flex-col', 'gap-1', 'max-w-xl', 'items-end');
+    messageDiv.classList.add('flex', 'gap-1', 'mb-4', 'w-full', 'justify-end');
     const bubbleDiv = document.createElement('div');
     bubbleDiv.classList.add('px-4', 'py-2', 'rounded-2xl', 'max-w-[80%]', 'break-words', 'shadow', 'bg-teal-600', 'text-white', 'self-end');
     bubbleDiv.textContent = message;
