@@ -1,6 +1,7 @@
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, include
 from . import views
 from django.contrib.auth import views as auth_views
+from django.contrib import admin
 
 app_name = 'accounts'
 
@@ -9,6 +10,9 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html', success_url=reverse_lazy('mypage:index')), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),  # allauth의 URL 추가
+
 
     # Password reset views
     path('password_reset/', auth_views.PasswordResetView.as_view(
@@ -39,4 +43,7 @@ urlpatterns = [
     # Email change views
     path('email_change/', views.email_change, name='email_change'),
     path('email_change/done/', views.email_change_done, name='email_change_done'),
+
+
+
 ]

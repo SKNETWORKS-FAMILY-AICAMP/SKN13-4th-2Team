@@ -43,6 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', # 소셜로그인 추가
+    'allauth', # 추가
+    'allauth.account', # 추가
+    'allauth.socialaccount', # 추가
+    'allauth.socialaccount.providers.google', # 추가
     'channels', # Add channels
     'chatbot',
     'mypage',
@@ -50,9 +55,17 @@ INSTALLED_APPS = [
     'accounts',
     'django_extensions',
     'home',
-    'widget_tweaks',
     'faq',
+    'widget_tweaks',
+
 ]
+
+AUTHENTICATION_BACKENDS=[
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
 
 ASGI_APPLICATION = 'music_project.asgi.application' # Add ASGI application
 
@@ -65,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware', # Add this line
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'music_project.urls'
@@ -166,3 +180,18 @@ CHANNEL_LAYERS = {
 SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID') # Replace with your Spotify Client ID
 SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
 
+SOCIALACCOUNT_PROVIDERS ={
+"google":{
+"APP":{
+"client_id":os.getenv('GOOGLE_CLIENT_ID'),
+"secret":os.getenv('GOOGLE_CLIENT_SECRET'),
+"key":""
+},
+"SCOPE":[
+    "profile", 
+    "email",
+],
+"AUTH_PARAMS":{
+"access_type":"online",
+"prompt":"select_account",
+}}}
