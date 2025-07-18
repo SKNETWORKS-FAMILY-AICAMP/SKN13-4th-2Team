@@ -10,7 +10,10 @@ urlpatterns = [
     path('mypage/', include(('mypage.urls', 'mypage'), namespace='mypage')),
     path('forum/', include(('forum.urls', 'forum'), namespace='forum')),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
+    path('faq/', include('faq.urls')),
 ]
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

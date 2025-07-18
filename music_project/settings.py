@@ -15,7 +15,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,6 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     'django_extensions',
     'home',
+    'faq',
 ]
 
 ASGI_APPLICATION = 'music_project.asgi.application' # Add ASGI application
@@ -164,4 +164,4 @@ CHANNEL_LAYERS = {
 # Spotify API Settings
 SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID') # Replace with your Spotify Client ID
 SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY') # 이 부분을 수정합니다. # Replace with your Spotify Client Secret
+# YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY') # 이 부분을 수정합니다. # Replace with your Spotify Client Secret
