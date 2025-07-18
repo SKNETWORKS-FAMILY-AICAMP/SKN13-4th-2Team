@@ -22,3 +22,5 @@ thumbs.db
 ngrok.exe
 .cache
 emails
+
+*.csv

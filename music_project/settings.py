@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     'django_extensions',
     'home',
+    'widget_tweaks',
     'faq',
 ]
 

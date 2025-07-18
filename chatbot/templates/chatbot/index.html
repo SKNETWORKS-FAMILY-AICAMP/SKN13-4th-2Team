@@ -2,329 +2,228 @@
 {% load i18n %}
 
 {% block content %}
-<style>
-    .chat-container {
-        display: flex;
-        flex-direction: column;
-        height: 75vh;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .chat-log {
-        flex-grow: 1;
-        padding: 20px;
-        overflow-y: auto;
-        background-color: #f9f9f9;
-    }
-    .chat-message {
-        margin-bottom: 15px;
-        display: flex;
-        flex-direction: column;
-    }
-    .chat-message .message-bubble {
-        padding: 10px 15px;
-        border-radius: 18px;
-        max-width: 70%;
-        word-wrap: break-word;
-    }
-    .chat-message.user .message-bubble {
-        background-color: #007bff;
-        color: white;
-        align-self: flex-end;
-    }
-    .chat-message.bot .message-bubble {
-        background-color: #e9e9eb;
-        color: #333;
-        align-self: flex-start;
-    }
-    .chat-input-container {
-        padding: 20px;
-        border-top: 1px solid #ddd;
-    }
-    #recommendations-log .card {
-        background-color: #fafafa;
-    }
-    .spotify-embed-container {
-        margin-bottom: 20px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .spotify-embed-container iframe {
-        width: 100%;
-        height: 80px; /* Compact player height */
-        border: none;
-    }
+<div class="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto py-10">
 
-    /* New styles for recommendations */
-    .recommendation-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        overflow: hidden;
-        transition: all 0.2s ease-in-out;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .recommendation-card:hover {
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
-    .recommendation-card .card-body {
-        padding: 15px;
-    }
-    .album-art-container img {
-        width: 60px; /* Slightly larger album art */
-        height: 60px;
-        border-radius: 8px; /* Slightly rounded corners for album art */
-        object-fit: cover;
-    }
-    .track-title {
-        font-size: 1rem; /* Adjust font size */
-        font-weight: 600; /* Make title bolder */
-        color: #333;
-    }
-    .track-artist {
-        font-size: 0.85rem; /* Adjust font size */
-        color: #666;
-    }
-    .track-actions .form-check-input {
-        width: 1.2em; /* Larger checkbox */
-        height: 1.2em;
-        cursor: pointer;
-    }
-    .play-button {
-        background-color: #1DB954; /* Spotify green */
-        border-color: #1DB954;
-        color: white;
-        border-radius: 20px; /* Pill shape */
-        padding: 5px 15px;
-        font-size: 0.85rem;
-        transition: background-color 0.2s ease;
-    }
-    .play-button:hover {
-        background-color: #1ED760;
-        border-color: #1ED760;
-    }
-</style>
-
-<div class="row">
-    <div class="col-md-7">
-        <div class="chat-container">
-            <div class="chat-log" id="chat-log">
-                <!-- Chat messages will appear here -->
-            </div>
-            <div class="chat-input-container">
-                <div class="input-group">
-                    <input type="text" class="form-control" id="chat-message-input" placeholder="{% trans "Type your message here..." %}">
-                    <button class="btn btn-primary" id="chat-message-submit">{% trans "Send" %}</button>
-                </div>
-            </div>
+  <!-- 채팅 영역 -->
+  <div class="w-full md:w-2/3">
+    <div class="bg-[#232323] rounded-xl shadow-lg flex flex-col h-[70vh]">
+      <!-- 채팅 로그 -->
+      <div id="chat-log" class="flex-1 p-6 overflow-y-auto space-y-4">
+        <!-- 채팅 메시지가 여기에 표시됩니다. -->
+      </div>
+      <!-- 입력 영역 -->
+      <div class="p-4 border-t border-[#333]">
+        <div class="flex gap-2">
+          <input id="chat-message-input"
+                 type="text"
+                 placeholder="메시지를 입력하세요"
+                 class="flex-1 bg-[#333] text-gray-200 px-4 py-2 rounded focus:outline-none"
+          >
+          <button id="chat-message-submit"
+                  class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded">
+            전송
+          </button>
         </div>
+      </div>
     </div>
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">추천 음악</h5>
-                
-                <!-- Spotify Embed Player -->
-                <div class="spotify-embed-container">
-                    <iframe id="spotify-embed-player" src="" allow="encrypted-media"></iframe>
-                </div>
+  </div>
 
-                <div id="recommendations-log" style="max-height: 45vh; overflow-y: auto;"> <!-- Adjusted max-height -->
-                    <p class="text-muted">추천 음악이 여기에 표시됩니다.</p>
-                </div>
-                <div class="mt-3 text-center">
-                    <button class="btn btn-success" id="create-playlist-btn" style="display: none;">{% trans "Create Playlist with Selected" %}</button>
-                </div>
-            </div>
-        </div>
+  <!-- 검색 음악 영역 -->
+  <div class="w-full md:w-1/3 flex flex-col gap-4">
+    <div class="bg-[#232323] rounded-xl shadow-lg p-5 flex flex-col gap-4">
+      <h3 class="text-lg font-bold mb-1">검색된 음악</h3>
+      <!-- Spotify 플레이어 -->
+      <div class="rounded-lg overflow-hidden bg-black mb-2">
+        <iframe id="spotify-embed-player" src="" class="w-full h-20 border-0"></iframe>
+      </div>
+      <div id="recommendations-log" class="space-y-3 max-h-72 overflow-y-auto">
+        <p class="text-gray-400">검색된 음악이 여기에 표시됩니다.</p>
+      </div>
+      <button id="create-playlist-btn"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-2 w-full hidden">
+        선택한 곡으로 플레이리스트 만들기
+      </button>
     </div>
+  </div>
 </div>
 
 <script>
-    const chatLog = document.querySelector('#chat-log');
-    const chatMessageInput = document.querySelector('#chat-message-input');
-    const chatMessageSubmit = document.querySelector('#chat-message-submit');
-    const recommendationsLog = document.querySelector('#recommendations-log');
-    const spotifyEmbedPlayer = document.getElementById('spotify-embed-player');
+const chatLog = document.querySelector('#chat-log');
+const chatMessageInput = document.querySelector('#chat-message-input');
+const chatMessageSubmit = document.querySelector('#chat-message-submit');
+const recommendationsLog = document.querySelector('#recommendations-log');
+const spotifyEmbedPlayer = document.getElementById('spotify-embed-player');
 
-    // Function to record listening history
-    function recordListeningHistory(spotifyId, title, artist, trackUrl) {
-        fetch('{% url "mypage:record_listening_history" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // 'X-CSRFToken': getCookie('csrftoken') // Uncomment and implement getCookie if not using @csrf_exempt
-            },
-            body: JSON.stringify({
-                spotify_id: spotifyId,
-                title: title,
-                artist: artist,
-                track_url: trackUrl
-            })
+// 청취 이력 기록 함수
+function recordListeningHistory(spotifyId, title, artist, trackUrl) {
+    fetch('{% url "mypage:record_listening_history" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            spotify_id: spotifyId,
+            title: title,
+            artist: artist,
+            track_url: trackUrl
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                console.log('Listening history recorded successfully!');
-            } else {
-                console.error('Failed to record listening history:', data.message);
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('청취 이력이 성공적으로 저장되었습니다!');
+        } else {
+            console.error('청취 이력 저장 실패:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('청취 이력 저장 오류:', error);
+    });
+}
+
+// 트랙 재생 함수
+function playTrackInEmbed(spotifyId, title, artist, trackUrl) {
+    const embedUrl = `https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator`;
+    spotifyEmbedPlayer.src = embedUrl;
+    recordListeningHistory(spotifyId, title, artist, trackUrl);
+}
+
+// 채팅 소켓 연결
+const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+const chatSocket = new WebSocket(
+    protocol +
+    window.location.host +
+    '/ws/chat/'
+);
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const message = data.message;
+    const sender = data.sender;
+    const recommendations = data.recommendations || [];
+
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('flex', 'flex-col', 'gap-1', 'max-w-xl');
+    messageDiv.classList.add(sender === 'user' ? 'items-end' : 'items-start');
+
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.classList.add('px-4', 'py-2', 'rounded-2xl', 'max-w-[80%]', 'break-words', 'shadow');
+    if (sender === 'user') {
+        bubbleDiv.classList.add('bg-teal-600', 'text-white', 'self-end');
+    } else {
+        bubbleDiv.classList.add('bg-[#e9e9eb]', 'text-[#222]', 'self-start');
+    }
+    bubbleDiv.textContent = message;
+    messageDiv.appendChild(bubbleDiv);
+
+    chatLog.appendChild(messageDiv);
+
+    if (sender === 'bot' && recommendations.length > 0) {
+        recommendationsLog.innerHTML = '';
+        // 첫 곡 자동 재생
+        if (recommendations.length > 0) {
+            const firstTrack = recommendations[0];
+            playTrackInEmbed(firstTrack.id, firstTrack.name, firstTrack.artist, firstTrack.url);
+        }
+        recommendations.forEach(track => {
+            let albumImageHtml = '';
+            if (track.album_image_url) {
+                albumImageHtml = `<div class="flex-shrink-0"><img src="${track.album_image_url}" alt="앨범아트" class="w-14 h-14 rounded-lg object-cover mr-3"></div>`;
             }
-        })
-        .catch(error => {
-            console.error('Error recording listening history:', error);
+            const trackCard = document.createElement('div');
+            trackCard.className = "flex items-center gap-3 bg-[#292929] hover:bg-[#313131] rounded-lg p-3";
+            trackCard.innerHTML = `
+                ${albumImageHtml}
+                <div class="flex-1">
+                    <div class="font-bold text-base">${track.name}</div>
+                    <div class="text-xs text-gray-400">${track.artist}</div>
+                </div>
+                <div class="flex flex-col gap-1 items-end">
+                    <input type="checkbox" class="track-checkbox accent-teal-600 w-5 h-5 mb-1"
+                        data-track-id="${track.id}"
+                        data-track-name="${track.name}"
+                        data-track-artist="${track.artist}"
+                        data-track-url="${track.url}"
+                        data-album-image-url="${track.album_image_url || ''}">
+                    <button class="bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 py-1 rounded play-button"
+                        onclick="playTrackInEmbed('${track.id}', '${track.name}', '${track.artist}', '${track.url}')">
+                        재생
+                    </button>
+                </div>
+            `;
+            recommendationsLog.appendChild(trackCard);
         });
+        if (recommendations.length > 0) {
+            document.getElementById('create-playlist-btn').style.display = 'block';
+        } else {
+            document.getElementById('create-playlist-btn').style.display = 'none';
+        }
+    }
+    chatLog.scrollTop = chatLog.scrollHeight;
+};
+
+const createPlaylistBtn = document.getElementById('create-playlist-btn');
+createPlaylistBtn.onclick = function() {
+    const selectedTracks = [];
+    document.querySelectorAll('.track-checkbox:checked').forEach(checkbox => {
+        selectedTracks.push({
+            id: checkbox.dataset.trackId,
+            name: checkbox.dataset.trackName,
+            artist: checkbox.dataset.trackArtist,
+            url: checkbox.dataset.trackUrl,
+            album_image_url: checkbox.dataset.albumImageUrl
+        });
+    });
+
+    if (selectedTracks.length === 0) {
+        alert('플레이리스트에 추가할 곡을 선택하세요.');
+        return;
     }
 
-    // Function to play track in embed player
-    function playTrackInEmbed(spotifyId, title, artist, trackUrl) {
-        const embedUrl = `https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator`;
-        spotifyEmbedPlayer.src = embedUrl;
-        recordListeningHistory(spotifyId, title, artist, trackUrl); // Record history when played in embed
+    const playlistName = prompt('새 플레이리스트 이름을 입력하세요:', '새 플레이리스트');
+    if (playlistName === null || playlistName.trim() === '') {
+        alert('플레이리스트 이름이 입력되지 않았습니다. 생성을 취소합니다.');
+        return;
     }
 
-    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    const chatSocket = new WebSocket(
-        protocol +
-        window.location.host +
-        '/ws/chat/'
-    );
+    chatSocket.send(JSON.stringify({
+        'type': 'create_playlist_request',
+        'playlist_name': playlistName,
+        'tracks': selectedTracks
+    }));
+    alert(`'${playlistName}' 플레이리스트 생성 요청을 보냈습니다.`);
+};
 
-    chatSocket.onopen = function(e) {
-    };
+chatSocket.onclose = function(e) {
+    console.error('채팅 서버와의 연결이 끊어졌습니다.');
+};
 
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const message = data.message;
-        const sender = data.sender;
-        const recommendations = data.recommendations || [];
+chatMessageInput.focus();
+chatMessageInput.onkeyup = function(e) {
+    if (e.key === 'Enter') {
+        chatMessageSubmit.click();
+    }
+};
 
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', sender);
-        
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.classList.add('message-bubble');
-        bubbleDiv.textContent = message;
-        messageDiv.appendChild(bubbleDiv);
-        
-        chatLog.appendChild(messageDiv);
+chatMessageSubmit.onclick = function(e) {
+    const message = chatMessageInput.value;
+    if (message.trim() === '') return;
 
-        if (sender === 'bot' && recommendations.length > 0) {
-            recommendationsLog.innerHTML = ''; // Clear previous recommendations
-            let recommendationsHtml = ''; // Use a temporary string to build HTML
+    chatSocket.send(JSON.stringify({
+        'message': message
+    }));
 
-            // Automatically play the first recommended track in the embed player
-            if (recommendations.length > 0) {
-                const firstTrack = recommendations[0];
-                playTrackInEmbed(firstTrack.id, firstTrack.name, firstTrack.artist, firstTrack.url);
-            }
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('flex', 'flex-col', 'gap-1', 'max-w-xl', 'items-end');
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.classList.add('px-4', 'py-2', 'rounded-2xl', 'max-w-[80%]', 'break-words', 'shadow', 'bg-teal-600', 'text-white', 'self-end');
+    bubbleDiv.textContent = message;
+    messageDiv.appendChild(bubbleDiv);
 
-            recommendations.forEach(track => {
-                let albumImageHtml = '';
-                if (track.album_image_url) {
-                    albumImageHtml = `<div class="album-art-container me-3"><img src="${track.album_image_url}" alt="Album Art"></div>`;
-                }
-                recommendationsHtml += `
-                    <div class="card mb-3 recommendation-card">
-                        <div class="card-body d-flex align-items-center">
-                            ${albumImageHtml}
-                            <div class="flex-grow-1">
-                                <h6 class="track-title mb-0">${track.name}</h6>
-                                <p class="track-artist mb-0">${track.artist}</p>
-                            </div>
-                            <div class="track-actions d-flex align-items-center ms-3">
-                                <input class="form-check-input track-checkbox me-2" type="checkbox" value="" id="track-${track.id}"
-                                    data-track-id="${track.id}"
-                                    data-track-name="${track.name}"
-                                    data-track-artist="${track.artist}"
-                                    data-track-url="${track.url}"
-                                    data-album-image-url="${track.album_image_url || ''}">
-                                <button class="btn btn-sm play-button" onclick="playTrackInEmbed('${track.id}', '${track.name}', '${track.artist}', '${track.url}');">{% trans "Play" %}</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            recommendationsLog.innerHTML = recommendationsHtml;
-            // Show the create playlist button if there are recommendations
-            if (recommendations.length > 0) {
-                document.getElementById('create-playlist-btn').style.display = 'block';
-            } else {
-                document.getElementById('create-playlist-btn').style.display = 'none';
-            }
-        }
-        chatLog.scrollTop = chatLog.scrollHeight;
-    };
+    chatLog.appendChild(messageDiv);
 
-    // ... (existing onclose, focus, onkeyup) ...
-
-    const createPlaylistBtn = document.getElementById('create-playlist-btn');
-    createPlaylistBtn.onclick = function() {
-        const selectedTracks = [];
-        document.querySelectorAll('.track-checkbox:checked').forEach(checkbox => {
-            selectedTracks.push({
-                id: checkbox.dataset.trackId,
-                name: checkbox.dataset.trackName,
-                artist: checkbox.dataset.trackArtist,
-                url: checkbox.dataset.trackUrl,
-                album_image_url: checkbox.dataset.albumImageUrl
-            });
-        });
-
-        if (selectedTracks.length === 0) {
-            alert('플레이리스트에 추가할 노래를 선택해주세요.');
-            return;
-        }
-
-        // 사용자에게 플레이리스트 이름 입력받기
-        const playlistName = prompt('새 플레이리스트의 이름을 입력해주세요:', '새 플레이리스트');
-        if (playlistName === null || playlistName.trim() === '') {
-            alert('플레이리스트 이름이 입력되지 않았습니다. 생성을 취소합니다.');
-            return; // 사용자가 취소했거나 빈 이름을 입력한 경우
-        }
-
-        // 선택된 트랙과 플레이리스트 이름을 백엔드로 전송
-        chatSocket.send(JSON.stringify({
-            'type': 'create_playlist_request',
-            'playlist_name': playlistName, // 플레이리스트 이름 추가
-            'tracks': selectedTracks
-        }));
-        alert(`'${playlistName}' 플레이리스트 생성 요청을 보냈습니다.`);
-    };
-
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    chatMessageInput.focus();
-    chatMessageInput.onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            chatMessageSubmit.click();
-        }
-    };
-
-    chatMessageSubmit.onclick = function(e) {
-        const message = chatMessageInput.value;
-        if (message.trim() === '') return;
-
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', 'user');
-        
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.classList.add('message-bubble');
-        bubbleDiv.textContent = message;
-        messageDiv.appendChild(bubbleDiv);
-        
-        chatLog.appendChild(messageDiv);
-        
-        chatMessageInput.value = '';
-        chatLog.scrollTop = chatLog.scrollHeight;
-    };
+    chatMessageInput.value = '';
+    chatLog.scrollTop = chatLog.scrollHeight;
+};
 </script>
 {% endblock %}

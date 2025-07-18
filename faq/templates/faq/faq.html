@@ -1,59 +1,72 @@
-<!-- templates/faq/faq.html -->
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-  <h2>자주 묻는 질문 (FAQ)</h2>
+<div class="max-w-2xl mx-auto my-10 p-6 bg-[#222] rounded-2xl shadow-lg">
+  <h2 class="text-2xl font-bold mb-6 text-teal-400">자주 묻는 질문 (FAQ)</h2>
 
-  <div class="accordion mt-4" id="faqAccordion">
+  <div id="faqAccordion" class="space-y-2">
     {% for faq in page_obj %}
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}"
-                  aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                  aria-controls="collapse{{ forloop.counter }}">
-            {{ faq.question }}
-          </button>
-        </h2>
-        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
-             aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#faqAccordion">
-          <div class="accordion-body">
-            {{ faq.answer|linebreaks }}
-          </div>
+      <div class="border border-[#333] rounded-lg bg-[#181818]">
+        <button type="button"
+          class="w-full text-left px-5 py-4 font-medium text-lg focus:outline-none transition flex items-center justify-between
+                 {% if not forloop.first %}collapsed{% endif %}"
+          aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+          data-toggle="collapse"
+          data-target="#collapse{{ forloop.counter }}"
+          onclick="toggleFaq({{ forloop.counter }})">
+          <span>{{ faq.question }}</span>
+          <svg id="icon-{{ forloop.counter }}" class="w-5 h-5 ml-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="collapse{{ forloop.counter }}"
+          class="faq-content px-5 pb-4 text-base text-gray-300 transition-all duration-200
+                 {% if not forloop.first %}hidden{% endif %}">
+          {{ faq.answer|linebreaks }}
         </div>
       </div>
     {% empty %}
-      <p>FAQ가 없습니다.</p>
+      <p class="text-gray-400">FAQ가 없습니다.</p>
     {% endfor %}
   </div>
 
-  <!-- ✅ 페이지 네비게이션 -->
-  <nav aria-label="FAQ 페이지">
-    <ul class="pagination justify-content-center mt-4">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">이전</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">이전</span></li>
-      {% endif %}
+  <!-- Pagination -->
+  <div class="flex justify-center mt-8 space-x-1">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}"
+         class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">이전</a>
+    {% else %}
+      <span class="px-3 py-1 rounded-md bg-[#222] text-gray-500">이전</span>
+    {% endif %}
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">다음</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">다음</span></li>
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="px-3 py-1 rounded-md bg-teal-600 text-white font-bold">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}"
+           class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">{{ num }}</a>
       {% endif %}
-    </ul>
-  </nav>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}"
+         class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">다음</a>
+    {% else %}
+      <span class="px-3 py-1 rounded-md bg-[#222] text-gray-500">다음</span>
+    {% endif %}
+  </div>
 </div>
+
+<script>
+function toggleFaq(idx) {
+  document.querySelectorAll('.faq-content').forEach((el, i) => {
+    if (i + 1 === idx) {
+      el.classList.toggle('hidden');
+      document.getElementById('icon-' + idx).classList.toggle('rotate-180');
+    } else {
+      el.classList.add('hidden');
+      document.getElementById('icon-' + (i + 1)).classList.remove('rotate-180');
+    }
+  });
+}
+</script>
 {% endblock %}

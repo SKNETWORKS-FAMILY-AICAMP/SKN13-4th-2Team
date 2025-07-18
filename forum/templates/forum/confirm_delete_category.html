@@ -2,11 +2,25 @@
 {% load i18n %}
 
 {% block content %}
-    <h1 class="mb-4">카테고리 삭제 확인</h1>
-    <p>카테고리 "{{ category.name }}"을(를) 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며, 해당 카테고리 내의 모든 스레드와 게시글이 삭제됩니다.</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
-        <a href="{% url 'forum:index' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+<div class="max-w-lg mx-auto py-12 px-6">
+  <h1 class="text-2xl font-bold text-red-500 mb-6">카테고리 삭제 확인</h1>
+  <div class="bg-[#232323] rounded-xl shadow p-6 mb-6">
+    <p class="mb-4 text-gray-200">
+      <span class="font-semibold text-red-400">[경고]</span>
+      카테고리 "<strong>{{ category.name }}</strong>"을(를) 정말로 삭제하시겠습니까?<br>
+      <span class="text-sm text-gray-400">
+        이 작업은 <b>되돌릴 수 없으며</b>, 해당 카테고리 내의 모든 스레드와 게시글이 삭제됩니다.
+      </span>
+    </p>
+    <form method="post" class="flex gap-2">
+      {% csrf_token %}
+      <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition" type="submit">
+        삭제
+      </button>
+      <a class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition" href="{% url 'forum:index' %}">
+        취소
+      </a>
     </form>
+  </div>
+</div>
 {% endblock %}

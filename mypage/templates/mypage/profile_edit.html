@@ -2,15 +2,15 @@
 {% load i18n %}
 
 {% block content %}
-    <h2 class="mb-4">{% trans "Edit Profile" %}</h2>
+    <h2 class="mb-4">프로필 편집</h2>
     <div class="card">
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data" id="profile-edit-form">
+            <form enctype="multipart/form-data" id="profile-edit-form" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary" id="save-profile-button">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <span class="button-text">{% trans "Save Changes" %}</span>
+                <button class="btn btn-primary" id="save-profile-button" type="submit">
+                    <span aria-hidden="true" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    <span class="button-text">변경 사항 저장</span>
                 </button>
             </form>
         </div>
@@ -23,7 +23,7 @@
 
             button.disabled = true;
             spinner.classList.remove('d-none');
-            buttonText.textContent = '{% trans "Saving..." %}'; // You might need to add this translation to your .po file
+            buttonText.textContent = '저장 중...';
         });
     </script>
 {% endblock %}

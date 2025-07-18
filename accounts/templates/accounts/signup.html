@@ -2,32 +2,28 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">{% trans "Sign Up" %}</h2>
-                    <form method="post" id="signup-form">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary w-100" id="signup-button">
-                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                            <span class="button-text">{% trans "Sign Up" %}</span>
-                        </button>
-                    </form>
-                    <script>
-                        document.getElementById('signup-form').addEventListener('submit', function() {
-                            const button = document.getElementById('signup-button');
-                            const spinner = button.querySelector('.spinner-border');
-                            const buttonText = button.querySelector('.button-text');
-
-                            button.disabled = true;
-                            spinner.classList.remove('d-none');
-                            buttonText.textContent = '{% trans "Signing up..." %}'; // You might need to add this translation to your .po file
-                        });
-                    </script>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[#232323] rounded-xl shadow-lg p-8 max-w-md w-full">
+    <h2 class="text-2xl font-bold text-center mb-6">회원가입</h2>
+    <form id="signup-form" method="post" class="space-y-6">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button id="signup-button" type="submit"
+              class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded font-semibold flex items-center justify-center">
+        <span aria-hidden="true" class="spinner-border spinner-border-sm d-none mr-2" role="status"></span>
+        <span class="button-text">가입하기</span>
+      </button>
+    </form>
+    <script>
+      document.getElementById('signup-form').addEventListener('submit', function() {
+        const button = document.getElementById('signup-button');
+        const spinner = button.querySelector('.spinner-border');
+        const buttonText = button.querySelector('.button-text');
+        button.disabled = true;
+        spinner.classList.remove('d-none');
+        buttonText.textContent = '가입 중...';
+      });
+    </script>
+  </div>
+</div>
 {% endblock %}

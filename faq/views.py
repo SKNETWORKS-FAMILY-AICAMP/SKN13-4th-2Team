@@ -8,7 +8,9 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from .models import FAQ
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def faq_page(request):
     faq_list = FAQ.objects.all()
     paginator = Paginator(faq_list, 10)  # ✅ 페이지당 10개씩
