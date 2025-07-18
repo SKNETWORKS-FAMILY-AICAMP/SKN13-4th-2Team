@@ -99,3 +99,4 @@ yarl==1.20.1
 zope.interface==7.2
 zstandard==0.23.0
 django-widget-tweaks==1.5.0
+chromadb==1.0.15
