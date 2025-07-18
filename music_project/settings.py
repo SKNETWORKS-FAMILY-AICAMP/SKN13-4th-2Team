@@ -164,4 +164,4 @@ CHANNEL_LAYERS = {
 # Spotify API Settings
 SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID') # Replace with your Spotify Client ID
 SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-# YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY') # 이 부분을 수정합니다. # Replace with your Spotify Client Secret
+
