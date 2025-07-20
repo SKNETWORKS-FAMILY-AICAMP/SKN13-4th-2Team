@@ -6,7 +6,7 @@ import requests # Import requests
 
 @login_required
 def index(request):
-    return render(request, 'chatbot/index.html')
+    return render(request, 'search/index.html')
 
 def youtube_search(request):
     query = request.GET.get('q', '')

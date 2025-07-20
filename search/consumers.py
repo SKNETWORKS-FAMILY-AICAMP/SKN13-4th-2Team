@@ -6,10 +6,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from asgiref.sync import sync_to_async
 from mypage.models import Playlist, Track # Import Playlist and Track models
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class SearchConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = 'chatbot_room' # You can make this dynamic if needed
-        self.room_group_name = 'chat_%s' % self.room_name
+        self.room_name = 'search_room' # You can make this dynamic if needed
+        self.room_group_name = 'search_%s' % self.room_name
 
         # Initialize Spotify client
         import requests
@@ -151,7 +151,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
-                    'type': 'chat_message',
+                    'type': 'search_message',
                     'sender': 'bot',
                     'message': bot_response,
                     'recommendations': recommended_tracks
@@ -160,7 +160,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print("Bot response sent to channel layer.")
 
     # Receive message from room group
-    async def chat_message(self, event):
+    async def search_message(self, event):
         message = event['message']
         sender = event.get('sender', 'bot')
         recommendations = event.get('recommendations', [])

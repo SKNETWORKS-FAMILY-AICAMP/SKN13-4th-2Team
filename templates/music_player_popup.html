@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(
-                `${window.opener ? window.opener.location.origin : window.location.origin}/chatbot/youtube_search/?q=${encodeURIComponent(query)}`
+                `${window.opener ? window.opener.location.origin : window.location.origin}/search/youtube_search/?q=${encodeURIComponent(query)}`
             );
             const data = await response.json();
 

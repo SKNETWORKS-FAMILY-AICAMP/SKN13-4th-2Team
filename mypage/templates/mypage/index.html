@@ -16,6 +16,15 @@
         {% endif %}
         <div class="text-xl font-semibold text-white">{{ user.username }}</div>
         <div class="text-teal-400 text-sm mb-2">{{ user_profile.nickname }}</div>
+
+        {# 이메일 표시 #}
+        <div class="text-gray-300 text-sm mb-3">
+          {% if user.email %}
+            {{ user.email }}
+          {% else %}
+            <span class="text-red-400">{% trans "Email not set." %}</span>
+          {% endif %}
+        </div>
         <a href="{% url 'mypage:profile_edit' %}" class="inline-block bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition">프로필 수정</a>
       </div>
       <div class="bg-[#232323] rounded-xl p-6 shadow flex-grow">

@@ -29,7 +29,7 @@
             </div>
         </div>
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-            <a href="{% url 'chatbot:index' %}" class="block px-4 py-2 rounded hover:bg-[#333] {% if request.path == '/chatbot/' %}bg-[#444]{% endif %}">{% trans "음악검색" %}</a>
+            <a href="{% url 'search:index' %}" class="block px-4 py-2 rounded hover:bg-[#333] {% if request.path == '/search/' %}bg-[#444]{% endif %}">{% trans "음악검색" %}</a>
             <a href="{% url 'mypage:index' %}" class="block px-4 py-2 rounded hover:bg-[#333] {% if request.path == '/mypage/' %}bg-[#444]{% endif %}">{% trans "마이페이지" %}</a>
             <a href="{% url 'forum:index' %}" class="block px-4 py-2 rounded hover:bg-[#333] {% if request.path == '/forum/' %}bg-[#444]{% endif %}">{% trans "포럼" %}</a>
             <a href="{% url 'faq' %}" class="block px-4 py-2 rounded hover:bg-[#333]">{% trans "FAQ" %}</a>

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount', # 추가
     'allauth.socialaccount.providers.google', # 추가
     'channels', # Add channels
-    'chatbot',
+    'search',
     'mypage',
     'forum',
     'accounts',
@@ -158,9 +158,20 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Email settings for password reset (development only)
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / 'emails' # This will create an 'emails' directory in your project root
+# SMTP Settings for actual email sending
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' # Your SMTP server (e.g., smtp.gmail.com for Gmail)
+EMAIL_PORT = 587 # Port for TLS (587) or SSL (465)
+EMAIL_USE_TLS = True # Use TLS encryption
+EMAIL_USE_SSL = False # Use SSL encryption (set to True if port is 465, then EMAIL_USE_TLS must be False)
+
+# Your email address and app password (LOADED FROM .env FOR SECURITY)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# Default email address for sending emails
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL # For server error notifications
 
 # Redirect URL after successful login
 LOGIN_REDIRECT_URL = '/mypage/'
