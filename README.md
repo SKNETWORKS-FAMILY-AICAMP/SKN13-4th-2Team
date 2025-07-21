@@ -117,7 +117,8 @@
 | **LLM Model**       | ![gpt-4.1](https://img.shields.io/badge/gpt--4.1-4B91FF?logo=openai&logoColor=white) |
 | **Collaboration Tool** | ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white) |
 | **Vector DB**| ![Chroma](https://img.shields.io/badge/Chroma-ff5c83?logo=databricks&logoColor=white) |
-| **API 활용** | ![KMA](https://img.shields.io/badge/기상청%20API-1E90FF?logo=cloudflare&logoColor=white) |
+| **API 활용** | ![OpenWeather](https://img.shields.io/badge/OpenWeather_API-FF9900?style=for-the-badge&logoColor=white) |
+
 
 <hr>
 
