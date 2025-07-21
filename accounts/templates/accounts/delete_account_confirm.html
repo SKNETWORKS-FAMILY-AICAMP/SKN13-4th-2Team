@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="text-center py-20">
+    <h2 class="text-xl font-bold mb-4">정말로 회원 탈퇴하시겠습니까?</h2>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded">회원 탈퇴</button>
+      <a href="{% url 'accounts:index' %}" class="ml-4 text-gray-500">취소</a>
+    </form>
+  </div>
+{% endblock %}

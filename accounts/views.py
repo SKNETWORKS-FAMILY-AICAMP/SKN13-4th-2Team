@@ -4,6 +4,9 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext_lazy as _
 from .forms import EmailChangeForm, SignupForm
+from django.contrib.auth import logout
+from django.core.exceptions import ValidationError  # 추가
+from django.utils.http import url_has_allowed_host_and_scheme
 
 def index(request):
     return render(request, 'accounts/index.html')
@@ -12,12 +15,21 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home:index')  # 회원가입 성공 후 홈페이지로 리다이렉트
+            try:
+                user = form.save()
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # 수정된 부분
+                next_url = request.POST.get('next') or request.GET.get('next')
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                    return redirect(next_url)
+                return redirect('home:index')
+            except ValidationError as e:
+                form.add_error(None, e.message)
     else:
         form = SignupForm()
-    return render(request, 'accounts/signup.html', {'form': form})
+    next_url = request.GET.get('next', '')
+    return render(request, 'accounts/signup.html', {'form': form, 'next': next_url})
+
+
 
 @login_required
 def email_change(request):
@@ -33,3 +45,13 @@ def email_change(request):
 @login_required
 def email_change_done(request):
     return render(request, 'accounts/email_change_done.html')
+
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        return redirect('home:index')
+    return render(request, 'accounts/delete_account_confirm.html')

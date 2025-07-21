@@ -44,6 +44,7 @@ urlpatterns = [
     path('email_change/', views.email_change, name='email_change'),
     path('email_change/done/', views.email_change_done, name='email_change_done'),
 
-
+    # delete account
+    path('delete/', views.delete_account, name='delete_account'),
 
 ]
