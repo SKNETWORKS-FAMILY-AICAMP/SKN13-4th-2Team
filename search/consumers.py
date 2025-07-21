@@ -4,14 +4,13 @@ from django.conf import settings
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from asgiref.sync import sync_to_async
-from mypage.models import Playlist, Track # Import Playlist and Track models
+from mypage.models import Playlist, Track
 
 class SearchConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = 'search_room' # You can make this dynamic if needed
+        self.room_name = 'search_room'
         self.room_group_name = 'search_%s' % self.room_name
 
-        # Initialize Spotify client
         import requests
         session = requests.Session()
         session.headers.update({'Accept-Language': 'ko-KR'})
@@ -20,30 +19,28 @@ class SearchConsumer(AsyncWebsocketConsumer):
             client_secret=settings.SPOTIPY_CLIENT_SECRET
         ), requests_session=session)
 
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message_type = text_data_json.get('type') # 메시지 타입을 가져옵니다.
+        message_type = text_data_json.get('type')
+        source = text_data_json.get('source', 'user_query')
+        search_type = text_data_json.get('search_type', 'track')
 
         if message_type == 'create_playlist_request':
-            playlist_name = text_data_json.get('playlist_name', 'New Playlist')
+            playlist_name = text_data_json.get('playlist_name', '새 플레이리스트')
             selected_tracks_data = text_data_json.get('tracks', [])
-            user = self.scope["user"] # Get the current user
+            user = self.scope["user"]
 
             if not user.is_authenticated:
                 await self.send(text_data=json.dumps({
@@ -52,21 +49,14 @@ class SearchConsumer(AsyncWebsocketConsumer):
                 }))
                 return
 
-            print(f"[Playlist Creation] Received playlist_name: {playlist_name}")
-            print(f"[Playlist Creation] Received selected_tracks_data: {selected_tracks_data}")
-
             try:
-                # Create the playlist in a synchronous context
                 new_playlist = await sync_to_async(Playlist.objects.create)(
                     user=user,
                     name=playlist_name,
-                    description="Created from chatbot recommendations"
+                    description="챗봇 추천으로 생성됨"
                 )
-                print(f"[Playlist Creation] New playlist created with ID: {new_playlist.id}")
-
                 track_objects = []
                 for track_data in selected_tracks_data:
-                    # Find or create Track objects in a synchronous context
                     track, created = await sync_to_async(Track.objects.get_or_create)(
                         spotify_id=track_data['id'],
                         defaults={
@@ -75,101 +65,95 @@ class SearchConsumer(AsyncWebsocketConsumer):
                         }
                     )
                     track_objects.append(track)
-                    print(f"[Playlist Creation] Processed track: {track.title} (Created: {created})")
-
-                print(f"[Playlist Creation] Final track_objects to add: {track_objects}")
-                # Add tracks to the playlist in a synchronous context
                 await sync_to_async(new_playlist.tracks.add)(*track_objects)
-                print(f"[Playlist Creation] Added {len(track_objects)} tracks to playlist {new_playlist.id}.")
-
                 await self.send(text_data=json.dumps({
                     'message': f"'{playlist_name}' 플레이리스트가 성공적으로 생성되었습니다!",
                     'sender': 'bot'
                 }))
-                print(f"Playlist '{playlist_name}' created for user {user.username} with {len(track_objects)} tracks.")
-
             except Exception as e:
-                print(f"Error creating playlist: {e}")
                 await self.send(text_data=json.dumps({
                     'message': f"플레이리스트 생성 중 오류가 발생했습니다: {e}",
                     'sender': 'bot'
                 }))
 
         else:
-            # 기존 챗봇 메시지 처리 로직
-            user_message = text_data_json.get('message', '') # 안전하게 .get() 사용
-            if not user_message: # 빈 메시지 처리
+            user_message = text_data_json.get('message', '')
+            if not user_message:
                 return
 
-            print(f"Received message from user: {user_message}")
-
-            # Simple recommendation logic: search Spotify for tracks
-            print("Attempting Spotify search...")
             try:
                 results = await sync_to_async(self.spotify.search)(
-                    q=user_message, type='track', limit=10
+                    q=user_message, type=search_type, limit=10
                 )
-                print(f"Spotify search results received. Number of items: {len(results['tracks']['items']) if results and results['tracks'] else 0}")
-
                 recommended_tracks = []
-                seen_track_ids = set() # Add this line to keep track of seen Spotify IDs
+                seen_track_ids = set()
+                items = results.get(f'{search_type}s', {}).get('items', [])
 
-                if results and results['tracks']['items']:
-                    for track in results['tracks']['items']:
-                        track_id = track['id'] # Get Spotify track ID
-
-                        if track_id not in seen_track_ids: # Check for duplicates
-                            seen_track_ids.add(track_id) # Add to seen set
-
-                            album_image_url = None
-                            if track['album'] and track['album']['images']:
-                                # Get the URL of the first (usually largest) album image
-                                album_image_url = track['album']['images'][0]['url']
-
+                for item in items:
+                    if search_type == 'track':
+                        track_id = item['id']
+                        if track_id not in seen_track_ids:
+                            seen_track_ids.add(track_id)
+                            album_image_url = item['album']['images'][0]['url'] if item['album']['images'] else None
                             recommended_tracks.append({
-                                'id': track['id'], # 이 줄을 추가합니다.
-                                'name': track['name'],
-                                'artist': track['artists'][0]['name'] if track['artists'] else 'Unknown Artist',
-                                'url': track['external_urls']['spotify'],
-                                'album_image_url': album_image_url # Add this line
+                                'id': item['id'],
+                                'name': item['name'],
+                                'artist': item['artists'][0]['name'] if item['artists'] else '알 수 없음',
+                                'url': item['external_urls']['spotify'],
+                                'album_image_url': album_image_url
                             })
-                    print(f"Deduplicated recommended_tracks: {recommended_tracks}")
-                    bot_response = "Here are some tracks I found for you:"
-                    print(f"Spotify search successful. Found {len(recommended_tracks)} tracks.")
+                    elif search_type == 'artist':
+                        recommended_tracks.append({
+                            'id': item['id'],
+                            'name': item['name'],
+                            'artist': '',  # 아티스트명 없음
+                            'url': item['external_urls']['spotify'],
+                            'album_image_url': (item['images'][0]['url'] if item.get('images') else None)
+                        })
+                    elif search_type == 'album':
+                        recommended_tracks.append({
+                            'id': item['id'],
+                            'name': item['name'],
+                            'artist': item['artists'][0]['name'] if item['artists'] else '',
+                            'url': item['external_urls']['spotify'],
+                            'album_image_url': (item['images'][0]['url'] if item.get('images') else None)
+                        })
+
+                type_for_front = search_type  # 프론트에 내려줌
+
+                if source == 'user_query':
+                    bot_response = "아래 추천곡을 찾아왔어요!"
                 else:
-                    bot_response = "Sorry, I couldn't find any tracks for that. Can you try something else?"
-                    print("Spotify search found no tracks.")
+                    bot_response = ""
+
+                if not recommended_tracks:
+                    bot_response = "해당 검색어로 곡을 찾지 못했습니다. 다른 검색어로 시도해보세요."
 
             except Exception as e:
-                bot_response = f"An error occurred while searching for music: {e}"
+                bot_response = f"음악을 검색하는 중 오류가 발생했습니다: {e}"
                 recommended_tracks = []
-                print(f"Spotify API Error: {e}")
+                type_for_front = 'track'
 
-            print(f"Bot response generated: {bot_response}")
-            print(f"Sending to channel layer. Recommendations count: {len(recommended_tracks)}")
-            # Send bot response and recommendations to room group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'search_message',
                     'sender': 'bot',
                     'message': bot_response,
-                    'recommendations': recommended_tracks
+                    'recommendations': recommended_tracks,
+                    'search_type': type_for_front  # type 정보 추가!
                 }
             )
-            print("Bot response sent to channel layer.")
 
-    # Receive message from room group
     async def search_message(self, event):
         message = event['message']
         sender = event.get('sender', 'bot')
         recommendations = event.get('recommendations', [])
-        print(f"[chat_message] Received from channel layer. Sender: {sender}, Message: {message[:50]}..., Recommendations count: {len(recommendations)}")
+        search_type = event.get('search_type', 'track')  # 프론트로 전달
 
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message,
             'sender': sender,
-            'recommendations': recommendations
+            'recommendations': recommendations,
+            'search_type': search_type
         }))
-        print(f"[chat_message] Message sent to WebSocket for sender {sender}. Recommendations count: {len(recommendations)}")
