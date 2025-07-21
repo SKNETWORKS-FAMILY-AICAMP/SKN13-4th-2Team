@@ -21,7 +21,8 @@ CITY_NAME_MAP = {
     "전주": "Jeonju",
     "천안": "Cheonan",
     "포항": "Pohang",
-    "제주": "Jeju"
+    "제주": "Jeju",
+    "제주도": "Jeju"
 }
 
 def get_weather(city="서울"):

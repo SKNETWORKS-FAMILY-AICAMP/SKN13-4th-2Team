@@ -49,4 +49,5 @@ WEATHER_TO_MOOD_TAGS = {
     "더움": ["summer", "energetic", "sweaty", "fun"],
     "추움": ["cold", "winter", "calm", "lonely"],
     "바람": ["windy", "nostalgic", "free", "refreshing"],
+    "구름조금": ["calm", "chill", "relaxed", "neutral"]
 }
