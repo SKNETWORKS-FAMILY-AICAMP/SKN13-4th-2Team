@@ -1,0 +1,26 @@
+
+# Byte-code files
+*.pyc
+__pycache__/
+
+# Django specific ignores
+*.log
+*.sqlite3
+
+# Environment variables
+.env
+
+# IDE specific ignores
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+thumbs.db
+
+# Project specific ignores
+ngrok.exe
+.cache
+emails
+
+*.csv

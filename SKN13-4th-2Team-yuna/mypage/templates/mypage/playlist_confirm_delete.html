@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">삭제 확인</h2>
+                <p class="text-center">
+                    플레이리스트 "<strong>{{ playlist.name }}</strong>"을(를) 정말로 삭제하시겠습니까?
+                </p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger w-100" type="submit">삭제</button>
+                    <a class="btn btn-secondary w-100 mt-2" href="{% url 'mypage:playlist_detail' playlist.id %}">취소</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

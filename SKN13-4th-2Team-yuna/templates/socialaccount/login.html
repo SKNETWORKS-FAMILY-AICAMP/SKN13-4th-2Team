@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load socialaccount %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-[#171717]">
+    <div class="bg-[#222] rounded-2xl shadow-xl w-full max-w-md p-8">
+        <h2 class="text-2xl font-bold text-white text-center mb-6">
+            {% trans "구글 계정으로 로그인" %}
+        </h2>
+        <div class="mb-8 text-center text-gray-400">
+            {% if process == "connect" %}
+                {% trans "구글 계정을 이 사이트와 연결하시겠습니까?" %}
+            {% else %}
+                {% trans "계속하려면 아래 버튼을 눌러 구글 계정으로 인증하세요." %}
+            {% endif %}
+        </div>
+        <form method="post" action="{{ request.path }}" class="space-y-4">
+            {% csrf_token %}
+            {% if form %}
+                {{ form.as_p }}
+            {% endif %}
+            <button type="submit"
+                class="w-full py-2 bg-[#ea4335] text-white font-semibold rounded-lg hover:bg-[#d93025] transition flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21.805 10.023H12v3.994h5.628c-.243 1.33-1.55 3.899-5.628 3.899-3.384 0-6.143-2.802-6.143-6.25s2.759-6.25 6.143-6.25c1.928 0 3.221.822 3.963 1.531l2.705-2.635C17.161 3.298 14.771 2 12 2 6.477 2 2 6.478 2 12s4.477 10 10 10c5.795 0 9.613-4.068 9.613-9.793 0-.654-.07-1.149-.159-1.684z"/>
+                </svg>
+                <span>Google 계정으로 계속</span>
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <a href="{% url 'accounts:login' %}" class="text-sm text-teal-400 hover:text-white transition">
+                {% trans "다른 계정으로 로그인" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

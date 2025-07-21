@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <h1 class="text-2xl font-bold text-teal-400 mb-6">
+    {{ category.name }} 카테고리의 토론 목록
+  </h1>
+
+  <div class="bg-[#232323] rounded-xl shadow p-6 mb-8">
+    <ul class="divide-y divide-gray-700">
+      {% for thread in threads %}
+        <li class="py-4 flex justify-between items-center">
+          <div>
+            <a href="{% url 'forum:post_list' thread.id %}"
+               class="text-lg font-semibold text-gray-100 hover:text-teal-300 transition">
+              {{ thread.title }}
+            </a>
+            <div class="text-xs text-gray-400 mt-1">
+              by {{ thread.author.username }}
+            </div>
+          </div>
+          <span class="bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded">
+            {{ thread.created_at|date:"Y-m-d H:i" }}
+          </span>
+        </li>
+      {% empty %}
+        <li class="py-8 text-center text-gray-400">아직 이 카테고리에 토론이 없습니다.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="flex gap-2">
+    <a class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition"
+       href="{% url 'forum:index' %}">
+      카테고리 목록으로
+    </a>
+    <a class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition"
+       href="{% url 'forum:create_thread' %}">
+      새 토론 생성
+    </a>
+  </div>
+</div>
+{% endblock %}

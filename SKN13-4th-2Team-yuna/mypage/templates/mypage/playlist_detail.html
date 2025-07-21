@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <h1 class="text-2xl font-bold text-white mb-6">{{ playlist.name }}</h1>
+  <div class="bg-[#232323] rounded-xl shadow mb-6 playlist-info-card">
+    <div class="border-b border-[#333] px-6 py-3">
+      <h5 class="text-lg font-semibold text-teal-300">플레이리스트 정보</h5>
+    </div>
+    <div class="px-6 py-4">
+      <p class="mb-1"><span class="font-semibold text-gray-300">설명:</span> {{ playlist.description|default:"설명 없음" }}</p>
+      <p class="mb-1"><span class="font-semibold text-gray-300">생성자:</span> {{ playlist.user.username }}</p>
+      <p class="mb-1"><span class="font-semibold text-gray-300">생성일:</span> {{ playlist.created_at|date:"Y년 n월 j일 A g시 i분" }}</p>
+      <p><span class="font-semibold text-gray-300">수정일:</span> {{ playlist.updated_at|date:"Y년 n월 j일 A g시 i분" }}</p>
+    </div>
+  </div>
+
+  <h3 class="text-lg font-bold text-white mt-6 mb-4">플레이리스트 곡</h3>
+  {% if tracks_with_details %}
+    <ul class="divide-y divide-[#333] bg-[#191919] rounded-xl overflow-hidden mb-6">
+      {% for track_detail in tracks_with_details %}
+        <li class="flex items-center justify-between px-4 py-3">
+          <div class="flex items-center">
+            {% if track_detail.album_image_url %}
+              <img src="{{ track_detail.album_image_url }}" alt="앨범 아트" class="w-12 h-12 rounded mr-3 object-cover" />
+            {% endif %}
+            <div>
+              <strong>{{ track_detail.name }}</strong> - <span class="text-gray-400">{{ track_detail.artist }}</span>
+            </div>
+          </div>
+          {% if track_detail.id %}
+            <a class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded transition text-sm" href="https://open.spotify.com/track/{{ track_detail.id }}" target="_blank">Spotify에서 듣기</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="py-6 text-center text-gray-400">이 플레이리스트에는 아직 곡이 없습니다.</div>
+  {% endif %}
+
+  <div class="flex flex-wrap gap-2 mt-4">
+    <a class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition" href="{% url 'mypage:edit_playlist' playlist.id %}">
+      플레이리스트 편집
+    </a>
+    <!-- 삭제 버튼(모달 토글) -->
+    <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition"
+            onclick="document.getElementById('deleteModal').classList.remove('hidden')">
+      플레이리스트 삭제
+    </button>
+    <a class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition" href="{% url 'mypage:index' %}">
+      내 플레이리스트로 돌아가기
+    </a>
+  </div>
+
+  <!-- 모달 (Tailwind 스타일/JS) -->
+  <div id="deleteModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center hidden">
+    <div class="bg-[#202020] rounded-xl p-8 max-w-md w-full">
+      <h4 class="text-xl font-bold mb-4 text-white">삭제 확인</h4>
+      <p class="mb-6 text-gray-300">플레이리스트 "<strong>{{ playlist.name }}</strong>"을(를) 정말로 삭제하시겠습니까?</p>
+      <div class="flex gap-2 justify-end">
+        <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                onclick="document.getElementById('deleteModal').classList.add('hidden')">취소</button>
+        <form method="post" action="{% url 'mypage:delete_playlist' playlist.id %}">
+          {% csrf_token %}
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">삭제</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

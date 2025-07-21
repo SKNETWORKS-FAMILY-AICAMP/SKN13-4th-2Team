@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8 px-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <h1 class="text-2xl font-bold text-gray-100">감상 내역</h1>
+        <form method="post" action="{% url 'mypage:clear_listening_history' %}" onsubmit="return confirm('정말로 감상 내역을 모두 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition font-semibold shadow">
+                감상 내역 전체 삭제
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-[#202020] rounded-xl shadow p-6">
+        {% if history %}
+            <ul class="divide-y divide-[#333]">
+                {% for item in history %}
+                    <li class="py-4 flex flex-col md:flex-row md:justify-between md:items-center">
+                        <div class="mb-2 md:mb-0">
+                            <a href="{{ item.track.track_url }}" target="_blank" class="font-semibold text-teal-400 hover:underline">
+                                {{ item.track.title }}
+                            </a>
+                            <span class="text-gray-400"> - {{ item.track.artist }}</span>
+                            <div class="text-xs text-gray-500 mt-1">{{ item.listened_at|date:"Y-m-d H:i" }}</div>
+                        </div>
+                        <a href="{{ item.track.track_url }}" target="_blank" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-1 rounded-lg text-sm shadow transition">
+                            다시 듣기
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="text-center text-gray-400 py-10">
+                아직 감상 내역이 없습니다.
+            </div>
+        {% endif %}
+    </div>
+    <div class="mt-6 flex justify-end">
+        <a href="{% url 'mypage:index' %}" class="bg-gray-700 hover:bg-gray-600 text-gray-100 px-6 py-2 rounded-xl shadow transition">
+            마이페이지로 돌아가기
+        </a>
+    </div>
+</div>
+{% endblock %}

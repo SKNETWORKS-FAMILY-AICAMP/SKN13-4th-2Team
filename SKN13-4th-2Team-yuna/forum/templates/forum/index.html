@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row gap-8 min-h-[80vh] px-4 py-6 max-w-7xl mx-auto">
+
+  <!-- 메인 영역 -->
+  <div class="flex-1">
+    <h1 class="text-3xl font-bold mb-6 text-white">{% trans "Forum" %}</h1>
+
+    <!-- 포럼 안내 -->
+    <div class="bg-[#232323] rounded-xl shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold text-teal-400 mb-2">저희 포럼에 오신 것을 환영합니다!</h2>
+      <p class="text-gray-300">
+        이곳은 음악 및 다양한 주제에 대한 생각, 질문, 토론을 나눌 수 있는 커뮤니티 공간입니다.<br>
+        기존 토론을 살펴보거나 새로운 토론을 시작해보세요!
+      </p>
+    </div>
+
+    <!-- 새 스레드 생성 버튼 -->
+    <div class="flex justify-end mb-4">
+      <a href="{% url 'forum:create_thread' %}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition font-semibold shadow">
+        {% trans "Create New Thread" %}
+      </a>
+    </div>
+
+    <!-- 스레드 리스트 -->
+    <h2 class="text-lg font-bold mb-3 text-gray-200">{% trans "All Threads" %}</h2>
+    <ul id="threads-list" class="divide-y divide-[#2d2d2d] bg-[#1a1a1a] rounded-xl shadow">
+      {% for thread in threads %}
+      <li class="flex justify-between items-center px-4 py-4 hover:bg-[#242424] transition">
+        <div>
+          <a href="{% url 'forum:post_list' thread.id %}" class="text-teal-400 hover:underline font-semibold">
+            {{ thread.title }}
+          </a>
+          <div class="text-sm text-gray-400 mt-1">
+            {% trans "Category:" %} {{ thread.category.name }} |
+            {% trans "by" %} {{ thread.author.username }} |
+            {{ thread.created_at|date:"Y-m-d H:i" }}
+          </div>
+        </div>
+        <span class="bg-teal-800 text-teal-100 rounded-full px-3 py-1 text-xs font-bold">
+          {{ thread.posts.count }}
+        </span>
+      </li>
+      {% empty %}
+      <li id="no-threads-message" class="text-center py-8 text-gray-400">{% trans "No threads yet. Be the first to create one!" %}</li>
+      {% endfor %}
+    </ul>
+
+    <div id="loading-indicator" class="flex justify-center my-6 hidden">
+      <svg class="animate-spin h-6 w-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 카테고리 사이드바 -->
+  <aside class="w-full md:w-72 flex-shrink-0">
+    <div class="bg-[#232323] rounded-xl shadow h-full flex flex-col">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[#333]">
+        <h3 class="text-lg font-bold text-white mb-0">카테고리</h3>
+        {% if user.is_superuser %}
+        <a href="{% url 'forum:create_category' %}" class="bg-teal-600 hover:bg-teal-700 text-white text-xs px-3 py-1 rounded transition">생성</a>
+        {% endif %}
+      </div>
+      <ul class="flex-1 divide-y divide-[#2d2d2d]">
+        {% for category in categories %}
+        <li class="flex items-center justify-between px-6 py-3 hover:bg-[#252525] transition">
+          <a href="{% url 'forum:thread_list' category.id %}" class="flex-grow text-gray-200 hover:text-teal-400 font-semibold">{{ category.name }}</a>
+          {% if user.is_superuser %}
+          <div class="flex gap-1">
+            <a href="{% url 'forum:edit_category' category.id %}" class="text-xs text-gray-400 hover:text-teal-400 px-2 py-1 rounded">수정</a>
+            <a href="{% url 'forum:delete_category' category.id %}" class="text-xs text-red-400 hover:text-red-500 px-2 py-1 rounded">삭제</a>
+          </div>
+          {% endif %}
+        </li>
+        {% empty %}
+        <li class="px-6 py-6 text-center text-gray-400">{% trans "No categories available." %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<script>
+  // ... JS 로직은 기존 코드 그대로 쓰면 됩니다 ...
+</script>
+{% endblock %}

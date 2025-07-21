@@ -1,0 +1,480 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-16 09:05+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\accounts\forms.py:6
+msgid "New Email"
+msgstr "새 이메일"
+
+#: .\accounts\forms.py:15
+msgid "This email address is already in use."
+msgstr "이 이메일 주소는 이미 사용 중입니다."
+
+#: .\accounts\templates\accounts\email_change_done.html:9
+msgid "Email changed"
+msgstr "이메일 변경됨"
+
+#: .\accounts\templates\accounts\email_change_done.html:10
+msgid "Your email address was changed successfully."
+msgstr "이메일 주소가 성공적으로 변경되었습니다."
+
+#: .\accounts\templates\accounts\email_change_done.html:11
+#: .\accounts\templates\accounts\password_change_done.html:11
+#: .\home\templates\home\index.html:26
+msgid "Go to My Page"
+msgstr "마이페이지로 이동"
+
+#: .\accounts\templates\accounts\email_change_form.html:9
+#: .\accounts\templates\accounts\email_change_form.html:13
+#: .\accounts\templates\accounts\index.html:8
+msgid "Change Email"
+msgstr "이메일 변경"
+
+#: .\accounts\templates\accounts\index.html:5
+msgid "Account Settings"
+msgstr "계정 설정"
+
+#: .\accounts\templates\accounts\index.html:7
+#: .\accounts\templates\accounts\password_change_form.html:9
+#: .\accounts\templates\accounts\password_change_form.html:13
+msgid "Change Password"
+msgstr "비밀번호 변경"
+
+#: .\accounts\templates\accounts\login.html:9
+#: .\accounts\templates\accounts\login.html:15
+#: .\home\templates\home\index.html:47 .\templates\base.html:43
+msgid "Login"
+msgstr "로그인"
+
+msgid "Logging in..."
+msgstr "로그인 중..."
+
+#: .\accounts\templates\accounts\login.html:29
+msgid "Forgot your password?"
+msgstr "비밀번호를 잊으셨나요?"
+
+#: .\accounts\templates\accounts\login.html:30
+msgid "Don't have an account?"
+msgstr "계정이 없으신가요?"
+
+#: .\accounts\templates\accounts\login.html:30
+msgid "Sign up here"
+msgstr "여기서 가입하기"
+
+#: .\accounts\templates\accounts\password_change_done.html:9
+msgid "Password changed"
+msgstr "비밀번호가 변경되었습니다"
+
+#: .\accounts\templates\accounts\password_change_done.html:10
+msgid "Your password was changed successfully."
+msgstr "비밀번호가 성공적으로 변경되었습니다."
+
+#: .\accounts\templates\accounts\password_reset_complete.html:9
+msgid "Password reset complete"
+msgstr "비밀번호 재설정 완료"
+
+#: .\accounts\templates\accounts\password_reset_complete.html:10
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "비밀번호가 설정되었습니다. 이제 로그인하실 수 있습니다."
+
+#: .\accounts\templates\accounts\password_reset_complete.html:11
+msgid "Log in"
+msgstr "로그인하기"
+
+#: .\accounts\templates\accounts\password_reset_confirm.html:9
+msgid "Set a new password"
+msgstr "새 비밀번호 설정"
+
+#: .\accounts\templates\accounts\password_reset_confirm.html:14
+msgid "Set password"
+msgstr "비밀번호 설정"
+
+#: .\accounts\templates\accounts\password_reset_confirm.html:17
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+"비밀번호 재설정 링크가 유효하지 않거나 이미 사용되었습니다. 새로 요청해 주세"
+"요."
+
+#: .\accounts\templates\accounts\password_reset_done.html:9
+msgid "Password Reset Email Sent"
+msgstr "비밀번호 재설정 이메일 발송"
+
+#: .\accounts\templates\accounts\password_reset_done.html:10
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"입력하신 이메일로 비밀번호 설정 방법을 안내하는 이메일을 발송했습니다(계정이 "
+"있다면). 곧 받으실 수 있습니다."
+
+#: .\accounts\templates\accounts\password_reset_done.html:11
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"이메일을 받지 못하셨다면 등록하신 주소가 맞는지 확인하시고, 스팸함도 확인해 "
+"주세요."
+
+#: .\accounts\templates\accounts\password_reset_email.html:4
+msgid "Follow the link below to reset your password:"
+msgstr "아래 링크를 클릭해 비밀번호를 재설정하세요:"
+
+#: .\accounts\templates\accounts\password_reset_form.html:9
+msgid "Reset Password"
+msgstr "비밀번호 재설정"
+
+#: .\accounts\templates\accounts\password_reset_form.html:10
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email you "
+"instructions for setting a new one."
+msgstr ""
+"비밀번호를 잊으셨나요? 아래에 이메일 주소를 입력하시면 새 비밀번호 설정 방법"
+"을 안내해드립니다."
+
+#: .\accounts\templates\accounts\password_reset_form.html:14
+msgid "Reset my password"
+msgstr "비밀번호 재설정하기"
+
+#: .\accounts\templates\accounts\signup.html:9
+#: .\accounts\templates\accounts\signup.html:15 .\templates\base.html:46
+msgid "Sign Up"
+msgstr "회원가입"
+
+msgid "Signing up..."
+msgstr "회원가입 중..."
+
+#: .\chatbot\templates\chatbot\index.html:5
+msgid "Music Chatbot"
+msgstr "음악 챗봇"
+
+#: .\chatbot\templates\chatbot\index.html:9
+#: .\chatbot\templates\chatbot\index.html:11
+msgid "Bot"
+msgstr "봇"
+
+#: .\chatbot\templates\chatbot\index.html:9
+msgid "Hello! What kind of music would you like to listen to today?"
+msgstr "안녕하세요! 오늘 어떤 음악을 듣고 싶으신가요?"
+
+#: .\chatbot\templates\chatbot\index.html:10
+msgid "You"
+msgstr "나"
+
+#: .\chatbot\templates\chatbot\index.html:10
+msgid "I'm feeling happy!"
+msgstr "기분이 좋아요!"
+
+#: .\chatbot\templates\chatbot\index.html:11
+msgid "Great! How about some upbeat pop music?"
+msgstr "좋아요! 신나는 팝 음악은 어떠세요?"
+
+#: .\chatbot\templates\chatbot\index.html:15
+msgid "Type your message here..."
+msgstr "여기에 메시지를 입력하세요..."
+
+#: .\chatbot\templates\chatbot\index.html:16
+msgid "Send"
+msgstr "보내기"
+
+#: .\chatbot\templates\chatbot\index.html:23
+msgid "Recommended Music / Filters"
+msgstr "추천 음악 / 필터"
+
+#: .\chatbot\templates\chatbot\index.html:24
+msgid ""
+"Placeholder for recommended songs/playlists or filter options (e.g., Mood, "
+"Genre)."
+msgstr "추천 곡/플레이리스트 또는 필터(예: 분위기, 장르) 자리에 표시됩니다."
+
+#: .\forum\templates\forum\create_thread.html:5
+#: .\forum\templates\forum\index.html:13
+#: .\forum\templates\forum\thread_list.html:18
+msgid "Create New Thread"
+msgstr "새 글쓰기"
+
+#: .\forum\templates\forum\create_thread.html:11
+msgid "Create Thread"
+msgstr "글 작성"
+
+#: .\forum\templates\forum\create_thread.html:12
+#: .\mypage\templates\mypage\create_playlist.html:12
+#: .\mypage\templates\mypage\edit_playlist.html:12
+#: .\mypage\templates\mypage\playlist_confirm_delete.html:14
+#: .\mypage\templates\mypage\playlist_detail.html:32
+msgid "Cancel"
+msgstr "취소"
+
+#: .\forum\templates\forum\index.html:5
+msgid "Forum Categories"
+msgstr "포럼 카테고리"
+
+#: .\forum\templates\forum\index.html:10
+msgid "No categories yet."
+msgstr "아직 카테고리가 없습니다."
+
+#: .\forum\templates\forum\post_list.html:6
+msgid "Author"
+msgstr "작성자"
+
+#: .\forum\templates\forum\post_list.html:6
+msgid "Created"
+msgstr "작성일"
+
+#: .\forum\templates\forum\post_list.html:17
+msgid "No posts in this thread yet."
+msgstr "아직 이 스레드에 게시글이 없습니다."
+
+#: .\forum\templates\forum\post_list.html:24
+msgid "Add a Post"
+msgstr "글 추가"
+
+#: .\forum\templates\forum\post_list.html:28
+msgid "Submit Post"
+msgstr "글 등록"
+
+#: .\forum\templates\forum\post_list.html:33
+msgid "Please"
+msgstr "다음의"
+
+#: .\forum\templates\forum\post_list.html:33
+msgid "log in"
+msgstr "로그인"
+
+#: .\forum\templates\forum\post_list.html:33
+msgid "to add a post."
+msgstr "후 글을 추가할 수 있습니다."
+
+#: .\forum\templates\forum\post_list.html:36
+msgid "Back to Thread List"
+msgstr "글 목록으로 돌아가기"
+
+#: .\forum\templates\forum\thread_list.html:5
+#, python-format
+msgid "Threads in %(category.name)s"
+msgstr "%(category.name)s의 글 목록"
+
+#: .\forum\templates\forum\thread_list.html:9
+#: .\mypage\templates\mypage\listening_history.html:9
+msgid "by"
+msgstr "작성자"
+
+#: .\forum\templates\forum\thread_list.html:13
+msgid "No threads in this category yet."
+msgstr "이 카테고리에 글이 없습니다."
+
+#: .\forum\templates\forum\thread_list.html:17
+msgid "Back to Categories"
+msgstr "카테고리로 돌아가기"
+
+#: .\home\templates\home\index.html:6
+msgid "Welcome to Music Recommender!"
+msgstr "Music Recommender에 오신 것을 환영합니다!"
+
+#: .\home\templates\home\index.html:7
+msgid ""
+"Explore music, chat with our bot, manage your profile, and share with others."
+msgstr ""
+"음악을 탐색하고, 챗봇과 대화하며, 프로필을 관리하고, 다른 사람들과 공유해보세"
+"요."
+
+#: .\home\templates\home\index.html:9
+msgid "Use the navigation bar above to explore different sections of the site."
+msgstr "상단의 내비게이션 바를 이용해 다양한 메뉴를 둘러보세요."
+
+#: .\home\templates\home\index.html:15 .\templates\base.html:18
+msgid "Chatbot"
+msgstr "챗봇"
+
+#: .\home\templates\home\index.html:16
+msgid "Get real-time music recommendations."
+msgstr "실시간 음악 추천 받기"
+
+#: .\home\templates\home\index.html:17
+msgid "Go to Chatbot"
+msgstr "챗봇으로 이동"
+
+#: .\home\templates\home\index.html:24 .\mypage\templates\mypage\index.html:5
+#: .\templates\base.html:21
+msgid "My Page"
+msgstr "마이페이지"
+
+#: .\home\templates\home\index.html:25
+msgid "Manage your profile and preferences."
+msgstr "내 프로필 및 설정 관리"
+
+#: .\home\templates\home\index.html:33 .\templates\base.html:24
+msgid "Forum"
+msgstr "포럼"
+
+#: .\home\templates\home\index.html:34
+msgid "Discuss music and share playlists."
+msgstr "음악을 토론하고 플레이리스트를 공유해보세요."
+
+#: .\home\templates\home\index.html:35
+msgid "Go to Forum"
+msgstr "포럼으로 이동"
+
+#: .\home\templates\home\index.html:42
+msgid "Account"
+msgstr "계정"
+
+#: .\home\templates\home\index.html:43
+msgid "Login or create a new account."
+msgstr "로그인 또는 새 계정 만들기"
+
+#: .\home\templates\home\index.html:45 .\templates\base.html:38
+msgid "Logout"
+msgstr "로그아웃"
+
+#: .\mypage\templates\mypage\create_playlist.html:5
+#: .\mypage\templates\mypage\index.html:36
+msgid "Create New Playlist"
+msgstr "새 플레이리스트 만들기"
+
+#: .\mypage\templates\mypage\create_playlist.html:11
+msgid "Create Playlist"
+msgstr "플레이리스트 생성"
+
+#: .\mypage\templates\mypage\edit_playlist.html:5
+#: .\mypage\templates\mypage\playlist_detail.html:12
+msgid "Edit Playlist"
+msgstr "플레이리스트 편집"
+
+#: .\mypage\templates\mypage\edit_playlist.html:11
+#: .\mypage\templates\mypage\profile_edit.html:13
+msgid "Save Changes"
+msgstr "변경 사항 저장"
+
+#: .\mypage\templates\mypage\index.html:8
+msgid "Profile"
+msgstr "프로필"
+
+#: .\mypage\templates\mypage\index.html:9
+msgid "Username"
+msgstr "아이디"
+
+#: .\mypage\templates\mypage\index.html:10
+msgid "Nickname"
+msgstr "닉네임"
+
+#: .\mypage\templates\mypage\index.html:12
+msgid "Avatar"
+msgstr "아바타"
+
+#: .\mypage\templates\mypage\index.html:14
+msgid "No avatar set."
+msgstr "아바타가 설정되지 않았습니다."
+
+#: .\mypage\templates\mypage\index.html:16
+#: .\mypage\templates\mypage\profile_edit.html:5
+msgid "Edit Profile"
+msgstr "프로필 수정"
+
+#: .\mypage\templates\mypage\index.html:22
+msgid "My Playlists"
+msgstr "내 플레이리스트"
+
+#: .\mypage\templates\mypage\index.html:28
+msgid "Edit"
+msgstr "수정"
+
+#: .\mypage\templates\mypage\index.html:29
+#: .\mypage\templates\mypage\playlist_confirm_delete.html:13
+#: .\mypage\templates\mypage\playlist_detail.html:35
+msgid "Delete"
+msgstr "삭제"
+
+#: .\mypage\templates\mypage\index.html:34
+msgid "No playlists created yet."
+msgstr "아직 플레이리스트가 없습니다."
+
+msgid "Start by creating your first playlist!"
+msgstr "첫 플레이리스트를 만들어보세요!"
+
+#: .\mypage\templates\mypage\index.html:45
+#: .\mypage\templates\mypage\listening_history.html:5
+msgid "Listening History"
+msgstr "청취 이력"
+
+#: .\mypage\templates\mypage\index.html:46
+msgid "View Listening History"
+msgstr "청취 이력 보기"
+
+#: .\mypage\templates\mypage\listening_history.html:12
+msgid "No listening history yet."
+msgstr "청취 이력이 없습니다."
+
+#: .\mypage\templates\mypage\listening_history.html:15
+msgid "Back to My Page"
+msgstr "마이페이지로 돌아가기"
+
+#: .\mypage\templates\mypage\playlist_confirm_delete.html:9
+#: .\mypage\templates\mypage\playlist_detail.html:25
+msgid "Confirm Delete"
+msgstr "삭제 확인"
+
+#: .\mypage\templates\mypage\playlist_confirm_delete.html:10
+#: .\mypage\templates\mypage\playlist_detail.html:29
+#, python-format
+msgid ""
+"Are you sure you want to delete the playlist \"<strong>%(playlist.name)s</"
+"strong>\"?"
+msgstr ""
+"정말로 플레이리스트 \"<strong>%(playlist.name)s</strong>\"를 삭제하시겠습니"
+"까?"
+
+#: .\mypage\templates\mypage\playlist_detail.html:6
+msgid "Description"
+msgstr "설명"
+
+#: .\mypage\templates\mypage\playlist_detail.html:7
+msgid "Created by"
+msgstr "생성자"
+
+#: .\mypage\templates\mypage\playlist_detail.html:8
+msgid "Created at"
+msgstr "생성일"
+
+#: .\mypage\templates\mypage\playlist_detail.html:9
+msgid "Last updated"
+msgstr "수정일"
+
+#: .\mypage\templates\mypage\playlist_detail.html:15
+msgid "Delete Playlist"
+msgstr "플레이리스트 삭제"
+
+#: .\mypage\templates\mypage\playlist_detail.html:17
+msgid "Back to My Playlists"
+msgstr "내 플레이리스트로 돌아가기"
+
+msgid "Saving..."
+msgstr "저장 중..."
+
+#: .\templates\base.html:7 .\templates\base.html:14
+msgid "Music Recommender"
+msgstr "Music Recommender"
+
+msgid "Toggle Theme"
+msgstr "테마 전환"
+
+#: .\templates\base.html:33
+#, python-format
+msgid "Hello, %(user.username)s!"
+msgstr "안녕하세요, %(user.username)s님!"

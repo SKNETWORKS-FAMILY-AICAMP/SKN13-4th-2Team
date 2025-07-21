@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-12 bg-[#232323] rounded-xl shadow-lg p-8">
+    <h4 class="text-2xl font-bold mb-6">유튜브 음악 플레이어</h4>
+    <!-- YouTube Player -->
+    <div class="aspect-w-16 aspect-h-9 mb-6">
+        <iframe
+            id="youtube-player"
+            class="rounded-lg w-full"
+            src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&controls=1&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=jfKfPfyJRdk"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+        ></iframe>
+    </div>
+    <!-- Search UI -->
+    <div class="flex mb-4 gap-2">
+        <input
+            id="youtube-search-input"
+            type="text"
+            placeholder="검색할 음악 제목을 입력하세요"
+            class="flex-1 bg-[#333] text-gray-200 px-4 py-2 rounded focus:outline-none"
+        >
+        <button id="youtube-search-btn" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded">
+            검색
+        </button>
+    </div>
+    <!-- Search Results -->
+    <div id="youtube-search-results" class="space-y-3">
+        <p class="text-gray-400">검색 결과가 여기에 표시됩니다.</p>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const youtubeSearchInput = document.getElementById('youtube-search-input');
+    const youtubeSearchBtn = document.getElementById('youtube-search-btn');
+    const youtubePlayer = document.getElementById('youtube-player');
+    const youtubeSearchResults = document.getElementById('youtube-search-results');
+
+    youtubeSearchBtn.addEventListener('click', async () => {
+        let query = youtubeSearchInput.value.trim();
+        if (!query) {
+            alert('검색어를 입력하세요.');
+            return;
+        }
+        if (query.includes('모음')) {
+            alert('"모음"이라는 단어는 검색할 수 없습니다.');
+            return;
+        }
+        query = `provided to youtube ${query} music`;
+
+        try {
+            const response = await fetch(
+                `${window.opener ? window.opener.location.origin : window.location.origin}/search/youtube_search/?q=${encodeURIComponent(query)}`
+            );
+            const data = await response.json();
+
+            youtubeSearchResults.innerHTML = '';
+            if (data.results && data.results.length > 0) {
+                // 첫 번째 동영상 자동 재생
+                const firstVideoId = data.results[0].video_id;
+                youtubePlayer.src = `https://www.youtube.com/embed/${firstVideoId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${firstVideoId}`;
+
+                data.results.forEach(result => {
+                    if (result.title.includes('모음')) return;
+                    const listItem = document.createElement('div');
+                    listItem.className = "flex items-center gap-3 p-2 rounded bg-[#292929] hover:bg-[#313131] transition";
+                    listItem.innerHTML = `
+                        <img src="${result.thumbnail}" alt="썸네일" class="w-16 h-12 rounded object-cover">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-200">${result.title}</div>
+                            <button class="mt-1 text-xs bg-teal-700 hover:bg-teal-800 text-white px-2 py-1 rounded play-youtube-video" data-video-id="${result.video_id}">
+                                재생
+                            </button>
+                        </div>
+                    `;
+                    youtubeSearchResults.appendChild(listItem);
+                });
+            } else {
+                youtubeSearchResults.innerHTML = `<p class="text-gray-400">검색 결과가 없습니다.</p>`;
+            }
+
+            // 재생 버튼 이벤트
+            document.querySelectorAll('.play-youtube-video').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const videoId = event.target.dataset.videoId;
+                    youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoId}`;
+                });
+            });
+
+        } catch (error) {
+            console.error('YouTube 검색 오류:', error);
+            youtubeSearchResults.innerHTML = `<p class="text-red-500">유튜브 검색 중 오류가 발생했습니다.</p>`;
+        }
+    });
+
+    youtubeSearchInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            youtubeSearchBtn.click();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -3,7 +3,8 @@ import spotipy
 from langchain_openai import ChatOpenAI
 from django.conf import settings
 from home.lastfm_utils import get_similar_tracks_by_artist, get_tracks_by_tags
-from home.mapping import MOOD_TAG_MAPPING as MOOD_TRANSLATION_MAP, GENRE_TAG_MAPPING
+from home.mapping import MOOD_TAG_MAPPING as MOOD_TRANSLATION_MAP, GENRE_TAG_MAPPING, WEATHER_TO_TAG_MAPPING
+import random
 
 # LLM 초기화
 llm = ChatOpenAI(
@@ -31,7 +32,6 @@ def analyze_user_intent(user_message):
 
     try:
         response_content = _get_llm_response(prompt)
-        print("LLM 응답:", response_content)
         if response_content.startswith("```json"):
             response_content = response_content[7:-3].strip()
         return json.loads(response_content)
@@ -123,6 +123,59 @@ def get_lastfm_fallback(keywords, limit=5):
     print(f"[변환된 태그] mood: {mood_tag}, genre: {genre_tag}")
     return get_tracks_by_tags(mood_tag=mood_tag, genre_tag=genre_tag, limit=limit)
 
+def normalize_weather_description_with_llm(weather_description):
+    """
+    LLM을 사용하여 상세 날씨 설명을 일반화된 날씨 키워드로 정규화합니다.
+    """
+    prompt = f"""다음 날씨 설명을 가장 적절한 하나의 날씨 키워드로 요약해주세요. 
+    가능한 키워드는 '맑음', '구름', '흐림', '비', '눈', '천둥번개', '안개', '바람', '소나기', '뇌우', '우박', '황사', '미세먼지', '보통', '좋음', '나쁨', '매우나쁨' 입니다.
+    만약 해당 키워드에 해당하지 않으면, 가장 유사한 키워드를 선택하거나 '알 수 없음'으로 반환해주세요.
+    
+    날씨 설명: "{weather_description}"
+    요약된 키워드:"""
+    
+    try:
+        response_content = _get_llm_response(prompt)
+        # LLM 응답에서 불필요한 따옴표나 공백 제거
+        normalized_weather = response_content.strip().replace('"', '')
+        return normalized_weather
+    except Exception as e:
+        print(f"[오류] 날씨 설명 정규화 중 문제 발생: {e}")
+        return "알 수 없음"
+
+def get_recommendations_by_weather_tags(weather_info, limit=5):
+    """날씨 정보에 기반하여 Last.fm 태그를 사용하여 음악을 추천합니다."""
+    print(f"[날씨 기반 추천] 날씨 정보: {weather_info}")
+    
+    # 날씨 정보에서 핵심 키워드 추출 (예: '맑음', '비', '흐림')
+    # 이 부분은 weather_info의 형식에 따라 유연하게 조정해야 합니다.
+    # 현재는 weather_info가 직접 날씨 상태 문자열이라고 가정합니다.
+    weather_key = None
+    for key in WEATHER_TO_TAG_MAPPING.keys():
+        if key in weather_info:
+            weather_key = key
+            break
+    
+    if not weather_key:
+        print(f"[날씨 기반 추천] 매핑되는 날씨 키워드를 찾을 수 없습니다: {weather_info}")
+        return [], None, None
+
+    possible_tags = WEATHER_TO_TAG_MAPPING.get(weather_key, [])
+    if not possible_tags:
+        print(f"[날씨 기반 추천] 매핑된 태그가 없습니다: {weather_key}")
+        return []
+
+    # 매핑된 태그 중 최대 2개를 무작위로 선택하여 조합
+    selected_tags = random.sample(possible_tags, min(len(possible_tags), 2))
+    
+    mood_tag = selected_tags[0] if selected_tags else None
+    # K-pop 노래만 가져오도록 genre_tag를 'k-pop'으로 강제 설정
+    genre_tag = 'k-pop'
+
+    print(f"[날씨 기반 추천] 선택된 태그: mood={mood_tag}, genre={genre_tag}")
+    tracks = get_tracks_by_tags(mood_tag=mood_tag, genre_tag=genre_tag, limit=limit)
+    return tracks, mood_tag, genre_tag
+
 def _get_llm_response(prompt):
     import requests
     headers = {
@@ -139,11 +192,9 @@ def _get_llm_response(prompt):
         json=body
     )
 
-    print("응답 상태 코드:", response.status_code)
-    print("응답 본문:", response.text)
-
     try:
         return response.json()['choices'][0]['message']['content']
     except Exception as e:
         print("[LLM 응답 파싱 오류]", e)
         return "죄송해요. 답변을 생성하는 중 문제가 발생했어요."
+

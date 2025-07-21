@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load socialaccount %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-[#171717]">
+    <div class="bg-[#222] rounded-2xl shadow-xl w-full max-w-md p-8 mt-10 border border-[#333]">
+        <h2 class="text-2xl font-bold text-white text-center mb-6">{% trans "로그인" %}</h2>
+        <form method="post" id="login-form" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- 로그인폼 필드 반복: 아이디/이메일 + 비밀번호 -->
+            {% for field in form.visible_fields %}
+                <div class="mb-2">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-white mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field|add_class:"w-full py-2 px-3 rounded border border-gray-300 text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500" }}
+                    {% if field.errors %}
+                        <span class="text-xs text-red-400">{{ field.errors }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <div class="text-sm text-red-400 mb-2">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            <button type="submit" class="w-full py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition flex items-center justify-center" id="login-button">
+                <span class="spinner-border spinner-border-sm d-none mr-2" role="status" aria-hidden="true"></span>
+                <span class="button-text">{% trans "로그인" %}</span>
+            </button>
+        </form>
+
+        <!-- 소셜 로그인 -->
+        <div class="mt-6 flex flex-col gap-2">
+            <a href="{% provider_login_url 'google' %}" class="w-full py-2 rounded-lg bg-[#ea4335] text-white text-center font-semibold flex items-center justify-center hover:bg-[#d93025] transition">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21.805 10.023H12v3.994h5.628c-.243 1.33-1.55 3.899-5.628 3.899-3.384 0-6.143-2.802-6.143-6.25s2.759-6.25 6.143-6.25c1.928 0 3.221.822 3.963 1.531l2.705-2.635C17.161 3.298 14.771 2 12 2 6.477 2 2 6.478 2 12s4.477 10 10 10c5.795 0 9.613-4.068 9.613-9.793 0-.654-.07-1.149-.159-1.684z"/>
+                </svg>
+                <span>Google로 로그인</span>
+            </a>
+        </div>
+
+        <script>
+            document.getElementById('login-form').addEventListener('submit', function() {
+                const button = document.getElementById('login-button');
+                const spinner = button.querySelector('.spinner-border');
+                const buttonText = button.querySelector('.button-text');
+                button.disabled = true;
+                spinner.classList.remove('d-none');
+                buttonText.textContent = '{% trans "로그인 중..." %}';
+            });
+        </script>
+
+        <div class="mt-6 flex flex-col gap-2">
+            <a href="{% url 'accounts:password_reset' %}" class="text-sm text-teal-400 hover:text-white transition text-center">{% trans "비밀번호를 잊으셨나요?" %}</a>
+            <p class="text-center text-sm text-white">
+                {% trans "아직 계정이 없으신가요?" %}
+                <a href="{% url 'accounts:signup' %}" class="ml-1 text-teal-400 hover:underline">{% trans "회원가입" %}</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

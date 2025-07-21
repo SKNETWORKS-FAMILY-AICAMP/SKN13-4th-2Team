@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex flex-col items-center min-h-screen py-10">
+  <h2 class="text-3xl font-bold text-white mb-6">자주 묻는 질문 (FAQ)</h2>
+  <div class="bg-[#2A2A2A] p-8 rounded-xl shadow-2xl max-w-5xl w-full min-h-[80vh] flex flex-col">
+    <div class="max-w-2xl mx-auto w-full flex-grow flex flex-col">
+
+      <div class="flex-grow flex flex-col">
+        <div id="faqAccordion" class="space-y-2 flex flex-col flex-grow">
+        {% for faq in page_obj %}
+          <div class="border border-[#333] rounded-lg bg-[#181818] hover:bg-[#282828] transition shadow-md flex-grow">
+            <button type="button"
+              class="w-full text-left px-5 py-4 font-medium text-lg focus:outline-none transition flex items-center justify-between text-teal-400 hover:text-teal-300
+                     {% if not forloop.first %}collapsed{% endif %}"
+              aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-toggle="collapse"
+              data-target="#collapse{{ forloop.counter }}"
+              onclick="toggleFaq({{ forloop.counter }})">
+              <span>{{ faq.question }}</span>
+              <svg id="icon-{{ forloop.counter }}" class="w-5 h-5 ml-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div id="collapse{{ forloop.counter }}"
+              class="faq-content px-5 pb-4 pt-2 text-base text-gray-300 transition-all duration-200
+                     {% if not forloop.first %}hidden{% endif %}">
+              {{ faq.answer|linebreaks }}
+            </div>
+          </div>
+        {% empty %}
+          <div class="flex-1 flex items-center justify-center text-center text-gray-400">
+            <p class="text-2xl">FAQ가 없습니다.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex justify-center mt-8 space-x-1 mt-auto">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}"
+             class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">이전</a>
+        {% else %}
+          <span class="px-3 py-1 rounded-md bg-[#222] text-gray-500">이전</span>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="px-3 py-1 rounded-md bg-teal-600 text-white font-bold">{{ num }}</span>
+      {% else %}
+        <a href="?page={{ num }}"
+           class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}"
+             class="px-3 py-1 rounded-md bg-[#333] text-gray-200 hover:bg-teal-600 transition">다음</a>
+        {% else %}
+          <span class="px-3 py-1 rounded-md bg-[#222] text-gray-500">다음</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleFaq(idx) {
+  document.querySelectorAll('.faq-content').forEach((el, i) => {
+    if (i + 1 === idx) {
+      el.classList.toggle('hidden');
+      document.getElementById('icon-' + idx).classList.toggle('rotate-180');
+    } else {
+      el.classList.add('hidden');
+      document.getElementById('icon-' + (i + 1)).classList.remove('rotate-180');
+    }
+  });
+}
+</script>
+{% endblock %}

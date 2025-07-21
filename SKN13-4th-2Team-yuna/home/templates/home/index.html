@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="flex flex-col items-center min-h-screen py-10">
+  <h1 class="text-3xl font-bold text-white mb-6">Music Recommender 챗봇</h1>
+
+  <div class="bg-[#2A2A2A] p-8 rounded-xl shadow-2xl max-w-4xl w-full flex flex-col h-[85vh]">
+    <!-- 채팅 메시지 출력 영역 -->
+    <div id="chat-window" class="flex-1 overflow-y-auto p-4 bg-[#1F1F1F] rounded mb-4 space-y-4"
+         style="scroll-behavior: smooth;">
+      <!-- 초기 메시지 -->
+      <div class="flex justify-start">
+        <div class="inline-block bg-teal-600 text-white px-4 py-2 rounded-lg max-w-xs">
+          안녕하세요! 어떤 음악을 추천해 드릴까요?
+        </div>
+      </div>
+    </div>
+
+    <!-- 메시지 입력 폼 -->
+    <form id="chat-form" class="flex gap-2" onsubmit="event.preventDefault(); sendMessage();">
+      <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." 
+             class="flex-grow px-4 py-2 rounded-lg bg-[#191919] text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+      <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg">
+        전송
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chat-window');
+    const chatInput = document.getElementById('chat-input');
+    const chatForm = document.getElementById('chat-form');
+
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const chatSocket = new WebSocket(
+        protocol +
+        window.location.host +
+        '/ws/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const message = data.message;
+        const sender = data.sender;
+        const recommendations = data.recommendations || [];
+
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('flex', 'mb-4');
+        if (sender === 'user') {
+            messageDiv.classList.add('justify-end');
+        } else {
+            messageDiv.classList.add('justify-start');
+        }
+
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.classList.add('px-4', 'py-2', 'rounded-lg', 'max-w-[80%]', 'break-words', 'shadow');
+        if (sender === 'user') {
+            bubbleDiv.classList.add('bg-teal-600', 'text-white');
+        } else {
+            bubbleDiv.classList.add('bg-gray-700', 'text-gray-200');
+        }
+        bubbleDiv.textContent = message;
+        messageDiv.appendChild(bubbleDiv);
+        chatWindow.appendChild(messageDiv);
+
+        // 추천 음악 표시 (간단하게 텍스트로 표시)
+        if (recommendations.length > 0) {
+            const recDiv = document.createElement('div');
+            recDiv.classList.add('flex', 'justify-start', 'mb-4');
+            const recBubble = document.createElement('div');
+            recBubble.classList.add('px-4', 'py-2', 'rounded-lg', 'max-w-[80%]', 'break-words', 'shadow', 'bg-gray-800', 'text-gray-300');
+            let recText = "이런 음악은 어떠세요?\n";
+            recommendations.forEach((track, index) => {
+                recText += `${index + 1}. ${track.name} - ${track.artist}\n`;
+            });
+            recBubble.textContent = recText;
+            recDiv.appendChild(recBubble);
+            chatWindow.appendChild(recDiv);
+        }
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    };
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message === '') return;
+
+        chatSocket.send(JSON.stringify({'message': message}));
+
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('flex', 'mb-4', 'justify-end');
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.classList.add('px-4', 'py-2', 'rounded-lg', 'max-w-[80%]', 'break-words', 'shadow', 'bg-teal-600', 'text-white');
+        bubbleDiv.textContent = message;
+        messageDiv.appendChild(bubbleDiv);
+        chatWindow.appendChild(messageDiv);
+
+        chatInput.value = '';
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    chatInput.focus();
+    chatInput.onkeyup = function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+  </script>
+</div>
+{% endblock %}
