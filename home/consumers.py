@@ -4,7 +4,10 @@ from django.conf import settings
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from asgiref.sync import sync_to_async
-# bot_logic.py에서 함수 임포트
+# bot_logic.py에서 함수 임포트 
+# ✅ 수정된 코드
+from .bot_logic import normalize_keywords
+
 from .bot_logic import analyze_user_intent, search_specific_music, get_recommendations_via_expanded_search, _get_llm_response
 
 class HomeChatConsumer(AsyncWebsocketConsumer):
@@ -70,6 +73,51 @@ class HomeChatConsumer(AsyncWebsocketConsumer):
                     bot_response = "죄송합니다. 요청하신 분위기에 맞는 음악을 찾지 못했어요. 다른 표현으로 말씀해주시겠어요?"
             else:
                 bot_response = "어떤 분위기의 음악을 찾으시는지 더 자세히 알려주세요."
+        elif intent == 'recommend_by_keyword':
+            keyword = intent_data.get('keyword')
+            if keyword:
+                from .bot_logic import normalize_keyword  # 추가해줘야 해
+                normalized = normalize_keyword(keyword)   # ✅ 여기서 변환
+                tracks = await sync_to_async(search_specific_music)(self.spotify, normalized)
+                if tracks:
+                    bot_response = f"'{keyword}' 관련 음악을 추천드릴게요!"
+                    recommended_tracks = tracks
+                else:
+                    bot_response = f"'{keyword}'와 관련된 음악을 찾지 못했어요."
+            else:
+                bot_response = "추천을 원하시는 음악 키워드를 입력해주세요."
+        elif intent == 'recommend_by_mood':
+            from .bot_logic import normalize_keywords
+            keywords = intent_data.get('keywords', [])
+            mood_tag, genre_tag = normalize_keywords(keywords)
+
+            if mood_tag or genre_tag:
+                from .lastfm_utils import get_tracks_by_tags
+                tracks = await sync_to_async(get_tracks_by_tags)(mood_tag, genre_tag)
+                if tracks:
+                    bot_response = f"{', '.join(keywords)} 분위기의 음악을 추천드릴게요!"
+                    recommended_tracks = tracks
+                else:
+                    bot_response = f"{', '.join(keywords)} 분위기에 맞는 음악을 찾지 못했어요."
+            else:
+                bot_response = f"'{', '.join(keywords)}'에서 추천 가능한 분위기를 찾지 못했어요."
+        elif intent == 'recommend_by_genre':
+            from .bot_logic import normalize_keywords
+            keywords = intent_data.get('keywords', [])
+            mood_tag, genre_tag = normalize_keywords(keywords)
+
+            if genre_tag or mood_tag:
+                from .lastfm_utils import get_tracks_by_tags
+                tracks = await sync_to_async(get_tracks_by_tags)(mood_tag, genre_tag)
+                if tracks:
+                    bot_response = f"{', '.join(keywords)} 장르의 음악을 추천드릴게요!"
+                    recommended_tracks = tracks
+                else:
+                    bot_response = f"{', '.join(keywords)} 장르에 맞는 음악을 찾지 못했어요."
+            else:
+                bot_response = f"'{', '.join(keywords)}'에서 추천 가능한 장르를 찾지 못했어요."
+
+
         elif intent == 'general_conversation':
             bot_response = await sync_to_async(_get_llm_response)([], user_message)
         else:

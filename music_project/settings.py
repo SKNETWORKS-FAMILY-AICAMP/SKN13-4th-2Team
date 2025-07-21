@@ -208,3 +208,7 @@ SOCIALACCOUNT_PROVIDERS ={
 "access_type":"online",
 "prompt":"select_account",
 }}}
+
+# LastFMapi key
+LASTFM_API_KEY = os.getenv('LASTFM_API_KEY')
+LASTFM_API_SECRET = os.getenv('LASTFM_API_SECRET')
