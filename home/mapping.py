@@ -22,6 +22,8 @@ MOOD_TAG_MAPPING = {
 GENRE_TAG_MAPPING = {
     "케이팝": "k-pop",
     "한국": "k-pop",
+    "일본": "j-pop",
+    "제이팝": "j-pop",
     "팝": "pop",
     "록": "rock",
     "힙합": "hip-hop",
