@@ -75,58 +75,38 @@ def get_response(user_input, conversation_state):
     if 'stage' not in conversation_state:
         conversation_state['stage'] = 'initial'
 
-    # --- 상태 기반 응답 처리 (도시를 물어본 후) ---
-    if conversation_state.get('stage') == 'awaiting_city_for_recommendation':
-        city = user_input.strip()
-        weather_info = get_weather(city=city)
+    # 의도 분석 기반 응답 처리
+    intent_data = _get_user_intent(user_input)
+    intent = intent_data.get("intent")
+    city = intent_data.get("city")
+
+    # 1. 날씨 기반 노래 추천 의도
+    if intent == "RECOMMEND_SONG_BASED_ON_WEATHER":
+        # 도시가 지정되지 않았으면 기본값(서울)으로 날씨 정보 조회
+        weather_info = get_weather(city=city) if city else get_weather()
+        
         if "오류" in weather_info or "없습니다" in weather_info:
             response = weather_info
         else:
-            prompt_for_llm = f"현재 {city}의 날씨는 '{weather_info}'입니다. 이 날씨와 분위기에 어울리는 노래를 몇 곡 추천해 주세요."
+            # LLM에 전달할 프롬프트를 개선
+            prompt_for_llm = f"{weather_info} 이 날씨와 분위기에 어울리는 노래를 몇 곡 추천해 주세요."
             response = _get_llm_response(conversation_state['chat_history'], prompt_for_llm)
         conversation_state['stage'] = 'initial'
 
-    elif conversation_state.get('stage') == 'asking_for_city':
-        city = user_input.strip()
-        response = get_weather(city=city)
+    # 2. 단순 날씨 조회 의도
+    elif intent == "GET_WEATHER":
+        # 도시가 지정되지 않았으면 기본값(서울)으로 날씨 정보 조회
+        response = get_weather(city=city) if city else get_weather()
         conversation_state['stage'] = 'initial'
-
-    # --- 의도 분석 기반 응답 처리 ---
-    else:
-        intent_data = _get_user_intent(user_input)
-        intent = intent_data.get("intent")
-        city = intent_data.get("city")
-
-        # 1. 날씨 기반 노래 추천 의도
-        if intent == "RECOMMEND_SONG_BASED_ON_WEATHER":
-            if city:
-                weather_info = get_weather(city=city)
-                if "오류" in weather_info or "없습니다" in weather_info:
-                    response = weather_info
-                else:
-                    prompt_for_llm = f"현재 {city}의 날씨는 '{weather_info}'입니다. 이 날씨와 분위기에 어울리는 노래를 몇 곡 추천해 주세요."
-                    response = _get_llm_response(conversation_state['chat_history'], prompt_for_llm)
-                conversation_state['stage'] = 'initial'
-            else:
-                response = "어느 도시의 날씨를 기반으로 추천해 드릴까요?"
-                conversation_state['stage'] = 'awaiting_city_for_recommendation'
-
-        # 2. 단순 날씨 조회 의도
-        elif intent == "GET_WEATHER":
-            if city:
-                response = get_weather(city=city)
-            else:
-                response = "어느 도시의 날씨가 궁금하신가요?"
-                conversation_state['stage'] = 'asking_for_city'
-        
-        # 3. 일반 대화 또는 종료
-        else: # GENERAL_CONVERSATION
-            if "잘가" in lowered_input or "안녕히" in lowered_input or "종료" in lowered_input:
-                response = random.choice(["다음에 또 만나요!", "안녕히 가세요!", "즐거운 하루 되세요!"])
-                conversation_state['stage'] = 'exit'
-            else:
-                response = _get_llm_response(conversation_state['chat_history'], user_input)
-                conversation_state['stage'] = 'initial'
+    
+    # 3. 일반 대화 또는 종료
+    else: # GENERAL_CONVERSATION
+        if "잘가" in lowered_input or "안녕히" in lowered_input or "종료" in lowered_input:
+            response = random.choice(["다음에 또 만나요!", "안녕히 가세요!", "즐거운 하루 되세요!"])
+            conversation_state['stage'] = 'exit'
+        else:
+            response = _get_llm_response(conversation_state['chat_history'], user_input)
+            conversation_state['stage'] = 'initial'
 
     # 챗봇 응답을 대화 기록에 추가
     if response:
