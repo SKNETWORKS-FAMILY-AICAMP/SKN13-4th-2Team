@@ -32,7 +32,7 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 
 
 ## 1️⃣ 팀 소개
- ### 팀 명 : Moodyfy🎧
+### 팀 명 : Moodify🎧
 #### 🗓️ 개발 기간
 > 2025.07.18 ~ 2025.07.22
 ### 👥 팀원
@@ -87,7 +87,7 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/seonguihong">
-        <img src="https://img.shields.io/badge/GitHub-Gogimin-1F1F1F?logo=github" alt="홍성의 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-seonguihong-1F1F1F?logo=github" alt="홍성의 GitHub"/>
       </a>
     </td>
   </tr>
@@ -233,12 +233,8 @@ SKN13_4th_2team:
 | N-08 | 서비스 안정성  | 장애/트래픽 증가 대응 위한 재시도 및 이중화 고려                       | ★★  |
 | N-09 | 웹 접근성    | 색상 대비, 폰트 크기, 키보드 내비게이션 등 접근성 기준 충족                | ★   |
 
-
-
 <hr>
 
-## 7️⃣ 
-<hr>
 
 ## 7️⃣  테스트 계획 및 결과 보고서
 ### 테스트 계획 및 결과 보고서
