@@ -130,15 +130,11 @@ class HomeChatConsumer(AsyncWebsocketConsumer):
         else:
             bot_response = "죄송합니다. 이해하지 못했습니다. 다시 말씀해주시겠어요."
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'home_chat_message',
-                'sender': 'bot',
-                'message': bot_response,
-                'recommendations': recommended_tracks
-            }
-        )
+        await self.send(text_data=json.dumps({
+            'message': bot_response,
+            'sender': 'bot',
+            'recommendations': recommended_tracks
+        }))
 
     async def home_chat_message(self, event):
         message = event['message']
