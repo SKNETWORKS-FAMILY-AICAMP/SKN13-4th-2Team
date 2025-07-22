@@ -5,3 +5,4 @@ def extract_tags_from_text(text):
     mood_tag = next((en for kr, en in MOOD_TAG_MAPPING.items() if kr in text), None)
     genre_tag = next((en for kr, en in GENRE_TAG_MAPPING.items() if kr in text), None)
     return mood_tag, genre_tag
+

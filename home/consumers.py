@@ -117,6 +117,13 @@ class HomeChatConsumer(AsyncWebsocketConsumer):
             else:
                 bot_response = f"'{', '.join(keywords)}'에서 추천 가능한 장르를 찾지 못했어요."
 
+        elif intent == 'recommend_by_weather':
+            city = intent_data.get('city')
+            from .bot_logic import recommend_by_current_weather
+            bot_response, recommended_tracks = await sync_to_async(recommend_by_current_weather)(city)
+
+
+
     
         elif intent == 'general_conversation':
             bot_response = await sync_to_async(_get_llm_response)([], user_message)

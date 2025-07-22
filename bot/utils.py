@@ -21,7 +21,9 @@ CITY_NAME_MAP = {
     "전주": "Jeonju",
     "천안": "Cheonan",
     "포항": "Pohang",
-    "제주": "Jeju"
+    "제주": "Jeju",
+    "제주도": "Jeju"
+
 }
 
 def get_weather(city="서울"):
@@ -83,4 +85,3 @@ if __name__ == '__main__':
     # 테스트를 위해 직접 실행할 경우
     print(get_weather(city="부산"))
     print(get_weather(city="서울"))
-
