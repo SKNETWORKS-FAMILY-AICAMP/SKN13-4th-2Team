@@ -82,38 +82,29 @@ def edit_playlist(request, playlist_id):
     playlist = get_object_or_404(Playlist, pk=playlist_id, user=request.user)
     form = PlaylistForm(instance=playlist)
     selected_tracks_data = []
+
+    # GET 요청 시 기존 트랙 정보 로드 (image_url 포함)
     for track in playlist.tracks.all():
-        # Fetch full track details from Spotify API to get album_image_url
         try:
-            print(f"[DEBUG] Fetching details for Spotify ID: {track.spotify_id}")
             spotify_track = spotify_client.track(track.spotify_id)
             album_image_url = None
-            if spotify_track:
-                print(f"[DEBUG] Spotify track data received: {spotify_track.keys()}")
-                if 'album' in spotify_track and spotify_track['album'] and 'images' in spotify_track['album'] and spotify_track['album']['images']:
-                    album_image_url = spotify_track['album']['images'][0]['url']
-                    print(f"[DEBUG] Album image URL extracted: {album_image_url}")
-                else:
-                    print("[DEBUG] No album images found for this track.")
-            else:
-                print("[DEBUG] spotify_client.track returned None.")
-
+            if spotify_track and 'album' in spotify_track and spotify_track['album'] and 'images' in spotify_track['album'] and spotify_track['album']['images']:
+                album_image_url = spotify_track['album']['images'][0]['url']
             selected_tracks_data.append({
                 'id': track.spotify_id,
-                'name': spotify_track['name'],
-                'artist': spotify_track['artists'][0]['name'] if spotify_track['artists'] else 'Unknown Artist',
-                'url': spotify_track['external_urls']['spotify'],
-                'album_image_url': album_image_url
+                'name': spotify_track['name'] if spotify_track else track.title,
+                'artist': spotify_track['artists'][0]['name'] if spotify_track and spotify_track['artists'] else track.artist,
+                'url': spotify_track['external_urls']['spotify'] if spotify_track else track.track_url,
+                'album_image_url': album_image_url # 앨범 이미지 URL 포함
             })
         except Exception as e:
-            print(f"Error fetching Spotify track {track.spotify_id}: {e}")
-            # Fallback if Spotify API call fails
+            print(f"Error fetching Spotify track {track.spotify_id} for edit view: {e}")
             selected_tracks_data.append({
                 'id': track.spotify_id,
                 'name': track.title,
                 'artist': track.artist,
                 'url': track.track_url,
-                'album_image_url': ''
+                'album_image_url': track.image_url # 기존 image_url 사용 (폴백)
             })
 
     if request.method == 'POST':
@@ -121,19 +112,29 @@ def edit_playlist(request, playlist_id):
         if form.is_valid():
             form.save()
 
-            # Update tracks in the playlist
             selected_tracks_json = request.POST.get('selected_tracks_json', '[]')
-            selected_tracks_data = json.loads(selected_tracks_json)
+            selected_tracks_data_from_post = json.loads(selected_tracks_json)
 
-            playlist.tracks.clear() # Clear existing tracks
-            for track_data in selected_tracks_data:
-                track_obj, created = Track.objects.get_or_create(
+            playlist.tracks.clear() # 기존 트랙 모두 제거
+
+            for track_data in selected_tracks_data_from_post:
+                # 트랙을 다시 추가할 때 Spotify API에서 최신 image_url을 가져와 업데이트
+                current_album_image_url = track_data.get('album_image_url', '') # POST 데이터에서 가져온 image_url
+                if not current_album_image_url and track_data.get('id'): # image_url이 없으면 Spotify에서 다시 가져오기 시도
+                    try:
+                        spotify_track = spotify_client.track(track_data['id'])
+                        if spotify_track and 'album' in spotify_track and spotify_track['album'] and 'images' in spotify_track['album'] and spotify_track['album']['images']:
+                            current_album_image_url = spotify_track['album']['images'][0]['url']
+                    except Exception as e:
+                        print(f"Error re-fetching image for {track_data['name']}: {e}")
+
+                track_obj, created = Track.objects.update_or_create( # get_or_create 대신 update_or_create 사용
                     spotify_id=track_data['id'],
                     defaults={
                         'title': track_data['name'],
                         'artist': track_data['artist'],
                         'track_url': track_data['url'],
-                        'image_url': track_data.get('album_image_url', '')
+                        'image_url': current_album_image_url # 업데이트된 image_url 저장
                     }
                 )
                 playlist.tracks.add(track_obj)
@@ -141,7 +142,6 @@ def edit_playlist(request, playlist_id):
             messages.success(request, "플레이리스트가 성공적으로 업데이트되었습니다.")
             return redirect('mypage:playlist_detail', playlist_id=playlist.id)
 
-    print(f"[DEBUG] selected_tracks_data before rendering: {selected_tracks_data}")
     return render(request, 'mypage/edit_playlist.html', {'form': form, 'playlist': playlist, 'selected_tracks_data': selected_tracks_data})
 
 @login_required

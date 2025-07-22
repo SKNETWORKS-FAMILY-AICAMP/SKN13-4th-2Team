@@ -19,7 +19,7 @@ def post_detail(request, post_id):
     """
     플레이리스트 게시물 상세 페이지
     """
-    post = get_object_or_404(PlaylistPost, pk=post_id)
+    post = get_object_or_404(PlaylistPost.objects.prefetch_related('playlist__tracks'), pk=post_id)
     comment_form = CommentForm()
     comments = post.comments.all().select_related('author')
     return render(request, 'forum/post_detail.html', {

@@ -31,7 +31,7 @@
                 {% for track in post.playlist.tracks.all %}
                 <li class="flex items-center justify-between py-3">
                     <div class="flex items-center">
-                        <img src="{{ track.image_url }}" alt="앨범 아트" class="w-12 h-12 rounded-md mr-4 object-cover">
+                        <img src="{{ track.image_url|default:'/static/images/default_album_cover.png' }}" alt="앨범 아트" class="w-12 h-12 rounded-md mr-4 object-cover">
                         <div>
                             <p class="font-semibold">{{ track.title|default:"제목 없음" }}</p>
                             <p class="text-sm text-gray-400">{{ track.artist|default:"아티스트 없음" }}</p>
