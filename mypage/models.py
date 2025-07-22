@@ -38,6 +38,7 @@ class Track(models.Model):
     artist = models.CharField(max_length=255)
     spotify_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
     track_url = models.URLField(max_length=500, blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True) # 추가된 필드
 
     def __str__(self):
         return f"{self.title} - {self.artist}"

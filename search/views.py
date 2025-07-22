@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.conf import settings
+from django.views.decorators.http import require_POST
+from mypage.models import Playlist, Track
+from django.shortcuts import get_object_or_404
 
 @login_required
 def index(request):
@@ -54,3 +57,48 @@ def spotify_search(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+@require_POST
+def add_track_to_playlist(request):
+    playlist_id = request.POST.get('playlist_id')
+    track_id = request.POST.get('track_id')
+    track_name = request.POST.get('track_name')
+    artist_name = request.POST.get('artist_name')
+    album_image = request.POST.get('album_image')
+
+    try:
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        track, created = Track.objects.get_or_create(
+            spotify_id=track_id,
+            defaults={
+                'title': track_name,
+                'artist': artist_name,
+                'image_url': album_image
+            }
+        )
+        # 이미 존재하는 트랙이라면 image_url을 업데이트
+        if not created and track.image_url != album_image:
+            track.image_url = album_image
+            track.save()
+
+        playlist.tracks.add(track)
+        return JsonResponse({'status': 'success', 'message': '트랙이 플레이리스트에 추가되었습니다.'})
+    except Playlist.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': '플레이리스트를 찾을 수 없습니다.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@login_required
+@require_POST
+def remove_track_from_playlist(request):
+    playlist_id = request.POST.get('playlist_id')
+    track_id = request.POST.get('track_id')
+
+    try:
+        playlist = get_object_or_404(Playlist, id=playlist_id, user=request.user)
+        track = get_object_or_404(Track, spotify_id=track_id)
+        playlist.tracks.remove(track)
+        return JsonResponse({'status': 'success', 'message': '트랙이 플레이리스트에서 제거되었습니다.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

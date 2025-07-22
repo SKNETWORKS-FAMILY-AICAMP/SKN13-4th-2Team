@@ -47,6 +47,7 @@ def email_change_done(request):
     return render(request, 'accounts/email_change_done.html')
 
 
+
 @login_required
 def delete_account(request):
     if request.method == 'POST':
@@ -55,3 +56,25 @@ def delete_account(request):
         user.delete()
         return redirect('home:index')
     return render(request, 'accounts/delete_account_confirm.html')
+
+
+# 이메일의 domain과 site_name을 수정하기 위한 커스텀 뷰
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        opts = {
+            "use_https": self.request.is_secure(),
+            "token_generator": self.token_generator,
+            "from_email": self.from_email,
+            "email_template_name": self.email_template_name,
+            "subject_template_name": self.subject_template_name,
+            "request": self.request,
+            "html_email_template_name": self.html_email_template_name,
+            "extra_email_context": {'site_name': 'SKN13-4th-2Team'}, # 사이트 이름 수정
+        }
+        # 현재 요청에서 실제 호스트(도메인)를 가져와 사용
+        form.save(domain_override=self.request.get_host(), **opts)
+        return redirect(self.get_success_url())
+
