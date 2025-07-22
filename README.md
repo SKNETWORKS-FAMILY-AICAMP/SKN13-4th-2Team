@@ -43,7 +43,7 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 
   <tr>
     <td align="center" width="16%">
-      <b></b>
+      <b>https://github.com/user-attachments/assets/57dcbe0b-f396-442d-afc8-0d187437c5c7</b>
     </td>
     <td align="center" width="16%">
       <b></b>
