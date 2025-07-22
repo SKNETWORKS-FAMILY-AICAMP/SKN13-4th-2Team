@@ -3,7 +3,9 @@ import spotipy
 from langchain_openai import ChatOpenAI
 from django.conf import settings
 from home.lastfm_utils import get_similar_tracks_by_artist, get_tracks_by_tags
-from home.mapping import MOOD_TAG_MAPPING as MOOD_TRANSLATION_MAP, GENRE_TAG_MAPPING
+from home.mapping import MOOD_TAG_MAPPING as MOOD_TRANSLATION_MAP, GENRE_TAG_MAPPING, WEATHER_TO_MOOD_TAGS
+from bot.utils import get_weather
+
 
 # LLM 초기화
 llm = ChatOpenAI(
@@ -13,20 +15,31 @@ llm = ChatOpenAI(
 
 def analyze_user_intent(user_message):
     prompt = f"""너는 사용자의 음악 추천 요청을 분석해서 intent와 keyword를 JSON으로 반환하는 분석기야.
-사용자가 \"{user_message}\"라고 입력했어.
 
-'keywords'는 1개 이상이야. 단, '노래', '음악', '추천'처럼 일반적인 단어는 포함하지 마.
-감정(예: 슬픈), 장르(예: 케이팝), 분위기/스타일(예: 차분한) 등 **의미 있는 키워드**만 포함시켜.
+    사용자가 \"{user_message}\"라고 입력했어.
 
-※ 주의: 사용자가 직접 언급하지 않은 지역/언어(예: 한국) 키워드는 넣지 마.
+    다음 intent 중 하나를 골라줘:
+    - recommend_by_weather: 날씨에 어울리는 음악을 추천해달라는 요청
+    - recommend_by_mood: 감정/기분 기반 음악 추천 요청
+    - recommend_by_genre: 장르 기반 음악 추천 요청
+    - recommend_by_keyword: 특정 키워드로 음악 검색 요청
+    - search_music: 곡 제목이나 가수 검색 요청
+    - general_conversation: 일반 대화
 
-다음 형식의 JSON으로 응답해:
-{{
-  "intent": "recommend_by_mood",  // 또는 "recommend_by_genre", "recommend_by_keyword", "search_music", "etc"
-  "keywords": ["슬픈"]            // 꼭 여러 개 넣되, 일반 단어는 제외하고 사용자 의도에 맞는 의미 있는 키워드만 포함!
-}}
-"""
+    'keywords'는 1개 이상이야. 단, '노래', '음악', '추천'처럼 일반적인 단어는 포함하지 마.
+    감정(예: 슬픈), 장르(예: 케이팝), 분위기/스타일(예: 차분한) 등 의미 있는 키워드만 포함시켜.
 
+    city는 사용자가 말한 도시가 있다면 꼭 넣고, 없다면 null로 해줘.
+    **도시 예시**: 서울, 부산, 인천, 대전, 대구, 광주, 제주, 제주도, 수원, 고양, 성남, 용인, 울산, 세종, 창원, 청주, 전주, 천안, 포항 등
+
+    응답은 반드시 JSON으로만 응답해:
+    예)
+    {{
+      "intent": "recommend_by_weather",
+      "keywords": [],
+      "city": "부산"
+    }}
+    """
 
 
     try:
@@ -34,10 +47,22 @@ def analyze_user_intent(user_message):
         print("LLM 응답:", response_content)
         if response_content.startswith("```json"):
             response_content = response_content[7:-3].strip()
-        return json.loads(response_content)
+
+
+        result = json.loads(response_content)
+        if 'city' not in result:
+            result['city'] = None
+        if 'keywords' not in result:
+            result['keywords'] = []
+
+        return result
     except Exception as e:
-        print(f"[오류] LLM 의도 분석 중 문제 발생: {e}")
-        return {"intent": "error"}
+        print(f"[오류] LLM 의도 분석 중 예외 발생: {e}")
+        return {
+            "intent": "general_conversation",
+            "keywords": [],
+            "city": None
+        }
 
 def normalize_keywords(keywords):
     mood_tag = None
@@ -46,13 +71,11 @@ def normalize_keywords(keywords):
     for keyword in keywords:
         k = keyword.strip()
 
-        # 정확히 일치
         if k in MOOD_TRANSLATION_MAP:
             mood_tag = MOOD_TRANSLATION_MAP[k]
         elif k in GENRE_TAG_MAPPING:
             genre_tag = GENRE_TAG_MAPPING[k]
         else:
-            # 포함된 경우 대응
             for m in MOOD_TRANSLATION_MAP:
                 if m in k:
                     mood_tag = MOOD_TRANSLATION_MAP[m]
@@ -63,7 +86,6 @@ def normalize_keywords(keywords):
                     break
 
     return mood_tag, genre_tag
-
 
 def search_specific_music(sp_client, keyword, limit=5):
     try:
@@ -122,6 +144,61 @@ def get_lastfm_fallback(keywords, limit=5):
     mood_tag, genre_tag = normalize_keywords(keywords)
     print(f"[변환된 태그] mood: {mood_tag}, genre: {genre_tag}")
     return get_tracks_by_tags(mood_tag=mood_tag, genre_tag=genre_tag, limit=limit)
+
+
+def normalize_weather_with_llm(raw_desc):
+    print(f"[정규화 요청] 날씨 설명: {raw_desc}")
+    prompt = f"""
+    다음은 실제 날씨 API에서 받은 날씨 설명이야: "{raw_desc}"
+    아래 정규화된 키 중 가장 유사한 것을 골라서 반환해줘:
+    - 맑음
+    - 흐림
+    - 비
+    - 눈
+    - 천둥번개
+    - 안개
+    - 더움
+    - 추움
+    - 바람
+    - 구름조금
+    
+    응답은 반드시 키 하나만 JSON 형식으로:
+    {{"normalized": "흐림"}}
+    """
+    try:
+        response = _get_llm_response(prompt)
+        result = json.loads(response.strip("```json").strip("```"))
+        return result.get("normalized")
+    except:
+        return None
+
+def recommend_by_current_weather(city=None, limit=5):
+    city = city or "서울"  # ← 이거 추가
+    weather_info = get_weather(city=city)
+
+    if "오류" in weather_info or "없습니다" in weather_info:
+        return weather_info, []
+
+    try:
+        raw_desc = weather_info.split("의 날씨는 '")[1].split("'")[0]
+        normalized = normalize_weather_with_llm(raw_desc)
+
+        if not normalized or normalized not in WEATHER_TO_MOOD_TAGS:
+            return f"현재 {city or '서울'}의 날씨는 '{raw_desc}'이지만, 이에 맞는 감정 태그가 없어요.", []
+
+        mood_tags = WEATHER_TO_MOOD_TAGS[normalized]
+        for mood_tag in mood_tags:
+            tracks = get_tracks_by_tags(mood_tag=mood_tag, limit=limit)
+            if tracks:
+                break
+        if not tracks:
+            return f"{normalized} 분위기에 맞는 음악을 찾지 못했어요.", []
+        
+        city_name = city if city else "서울"
+        return f"오늘 {city_name}의 날씨는 {normalized}이에요. 이런 음악은 어떠세요?", tracks
+
+    except Exception as e:
+        return f"날씨 분석 중 문제가 발생했어요: {e}", []
 
 def _get_llm_response(prompt):
     import requests

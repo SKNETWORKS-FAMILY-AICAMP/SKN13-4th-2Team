@@ -4,14 +4,11 @@ from . import views
 app_name = 'forum'
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('category/<int:category_id>/', views.thread_list, name='thread_list'),
-    path('thread/<int:thread_id>/', views.post_list, name='post_list'),
-    path('create_thread/', views.create_thread, name='create_thread'),
-    path('thread/<int:thread_id>/create_post/', views.create_post, name='create_post'),
-    path('post/<int:post_id>/edit/', views.post_edit, name='post_edit'),
-    path('post/<int:post_id>/delete/', views.post_delete, name='post_delete'),
-    path('create_category/', views.create_category, name='create_category'),
-    path('category/<int:category_id>/edit/', views.edit_category, name='edit_category'),
-    path('category/<int:category_id>/delete/', views.delete_category, name='delete_category'),
+    path('', views.post_list, name='post_list'),
+    path('create/', views.post_create, name='post_create'),
+    path('<int:post_id>/', views.post_detail, name='post_detail'),
+    path('<int:post_id>/edit/', views.post_edit, name='post_edit'),
+    path('<int:post_id>/delete/', views.post_delete, name='post_delete'),
+    path('<int:post_id>/like/', views.toggle_like, name='toggle_like'),
+    path('<int:post_id>/comment/', views.add_comment, name='add_comment'),
 ]

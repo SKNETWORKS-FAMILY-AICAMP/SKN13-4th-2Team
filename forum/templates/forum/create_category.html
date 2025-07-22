@@ -9,9 +9,14 @@
       {% csrf_token %}
       {{ form.non_field_errors }}
       <div>
-        <label for="{{ form.name.id_for_label }}" class="block text-gray-200 mb-2">카테고리 이름</label>
-        {{ form.name|add_class:"w-full px-4 py-2 rounded-lg border border-[#444] bg-[#191919] text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500" }}
+        <label for="{{ form.name.id_for_label }}" class="block text-gray-200 mb-2">{{ form.name.label }}</label>
+        {{ form.name }}
         {{ form.name.errors }}
+      </div>
+      <div>
+        <label for="{{ form.description.id_for_label }}" class="block text-gray-200 mb-2">{{ form.description.label }}</label>
+        {{ form.description }}
+        {{ form.description.errors }}
       </div>
       <div class="flex gap-2 mt-6">
         <button class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition" type="submit">

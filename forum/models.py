@@ -1,29 +1,40 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+from mypage.models import Playlist
 
-class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-class Thread(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='threads')
+class PlaylistPost(models.Model):
+    """
+    사용자가 자신의 플레이리스트를 자랑하는 게시물 모델
+    """
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='playlist_posts')
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE, related_name='shared_posts')
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='threads')
+    content = models.TextField(blank=True, help_text="플레이리스트에 대한 간단한 소개를 적어주세요.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_playlist_posts', blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return f"'{self.playlist.name}' by {self.author.username}"
 
-class Post(models.Model):
-    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    def total_likes(self):
+        return self.likes.count()
+
+class Comment(models.Model):
+    """
+    플레이리스트 게시물에 대한 댓글 모델
+    """
+    post = models.ForeignKey(PlaylistPost, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='playlist_comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['created_at']
+
     def __str__(self):
-        return f'Post by {self.author.username} on {self.thread.title}'
+        return f"Comment by {self.author.username} on {self.post.title}"
