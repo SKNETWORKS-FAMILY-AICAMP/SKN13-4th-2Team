@@ -40,54 +40,60 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 <table width="100%">
 
   <tr>
-
+    <td align=center><b>구자현</b></td>
+    <td align=center><b>김지민</b></td>
+    <td align=center><b>민경재</b></td>
+    <td align=center><b>박수빈</b></td>
+    <td align=center><b>이유나</b></td>
+    <td align=center><b>홍성의</b></td>
+  </tr>
   <tr>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/a2e78d57-db3e-4204-9d02-fff1ab699124"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/2624f7cc-db21-436d-bccd-52cede65a3b0"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/2e42b141-fff2-4d56-8c44-7b00756fd814"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/cc1f39e6-3496-433e-a24b-5322a69ad41d"/></b>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/c69f9919-6ed2-4036-b24f-bdcca4121e7d"/></b>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/fd9a233e-ae7e-4d89-90b6-49ba7d690bd5"/></b>
     </td>
   </tr>
   <tr>
     <td align="center" width="16%">
       <a href="https://github.com/Koojh99">
-        <img src="https://img.shields.io/badge/GitHub-Koojh99-1F1F1F?logo=github" alt="구자현 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-Koojh99-C7CDE5?logo=github" alt="구자현 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/Gogimin">
-        <img src="https://img.shields.io/badge/GitHub-Gogimin-1F1F1F?logo=github" alt="김지민 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-Gogimin-FAC8D1?logo=github" alt="김지민 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/rudwo524">
-        <img src="https://img.shields.io/badge/GitHub-rudwo524-1F1F1F?logo=github" alt="민경재 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-rudwo524-FECC99?logo=github" alt="민경재 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/subin0821">
-        <img src="https://img.shields.io/badge/GitHub-subin0821-1F1F1F?logo=github" alt="박수빈 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-subin0821-FFF2A3?logo=github" alt="박수빈 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/yunawawa">
-       <img src="https://img.shields.io/badge/GitHub-yunawawa-1F1F1F?logo=github" alt="이유나 GitHub"/>
+       <img src="https://img.shields.io/badge/GitHub-yunawawa-EFE1F8?logo=github" alt="이유나 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/seonguihong">
-        <img src="https://img.shields.io/badge/GitHub-seonguihong-1F1F1F?logo=github" alt="홍성의 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-seonguihong-BAD7E7?logo=github" alt="홍성의 GitHub"/>
       </a>
     </td>
   </tr>
