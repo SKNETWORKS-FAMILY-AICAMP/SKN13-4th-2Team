@@ -34,7 +34,7 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 
 
 ## 1️⃣ 팀 소개
- ### 팀 명 : 
+ ### 팀 명 : Moodyfy🎧
 ### 🗓️ 개발 기간
 > 2025.07.18 ~ 2025.07.22
 ### 👥 팀원
@@ -148,16 +148,16 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 ## 3️⃣ 기술 스택 및 파일 구조
 | 항목                | 내용 |
 |---------------------|------|
-| **Frontend**        |![HTML](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white)<br>![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)|
-| **Backend**         |![Django](https://img.shields.io/badge/-Django-092E20?logo=django&logoColor=white) |
+| **Frontend**        |![HTML](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white) ![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)  ![CSS](https://img.shields.io/badge/CSS-1572B6?&logo=css3&logoColor=white)|
+| **Backend**         |![Django](https://img.shields.io/badge/-Django-092E20?logo=django&logoColor=white) ![Bootstrap](https://img.shields.io/badge/-Bootstrap-7952B3?logo=bootstrap&logoColor=white)|
 | **Language**        | ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white) |
 | **Development**     | ![VS Code](https://img.shields.io/badge/-VS%20Code-007ACC?logo=visual-studio-code&logoColor=white) |
-| **Crawler**         | ![BeautifulSoup](https://img.shields.io/badge/-BeautifulSoup-4B8BBE?logo=python&logoColor=white)<br>![Selenium](https://img.shields.io/badge/-Selenium-43B02A?logo=selenium&logoColor=white) |
+| **Crawler**         | ![BeautifulSoup](https://img.shields.io/badge/-BeautifulSoup-4B8BBE?logo=python&logoColor=white) ![Selenium](https://img.shields.io/badge/-Selenium-43B02A?logo=selenium&logoColor=white) |
 | **Embedding**       |![openai](https://img.shields.io/badge/-openai-412991?logo=openai&logoColor=white)|
-| **LLM Model**       | ![gpt-4.1](https://img.shields.io/badge/gpt--4.1-4B91FF?logo=openai&logoColor=white) |
-| **Collaboration Tool** | ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white) |
-| **Vector DB**| ![Chroma](https://img.shields.io/badge/Chroma-ff5c83?logo=databricks&logoColor=white) |
-| **API 활용** | ![OpenWeather](https://img.shields.io/badge/OpenWeather_API-FF9900?style=for-the-badge&logoColor=white) |
+| **LLM Model**       | ![gpt-4.1](https://img.shields.io/badge/gpt--4o--mini-4B91FF?logo=openai&logoColor=white) |
+| **server**          | ![AWS EC2](https://img.shields.io/badge/AWS%20EC2-232F3E?logo=amazonaws&logoColor=white) ![Gunicorn](https://img.shields.io/badge/Gunicorn-499848?logo=gunicorn&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white) |
+| **Collaboration Tool** | ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?logo=notion&logoColor=white) |
+| **API 활용** | ![OpenWeather](https://img.shields.io/badge/OpenWeather_API-FF9900?&logoColor=white) |
 
 
 <hr>
@@ -179,6 +179,44 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 <hr>
 
 ## 6️⃣ 요구사항 명세서
+
+### 🎧 **Moodyfy 기능 요구사항 (Functional Requirements)**
+
+| 번호   | 기능명         | 설명                                               | 중요도 |
+| ---- | ----------- | ------------------------------------------------ | --- |
+| F-01 | 감정 입력 기능    | 사용자 감정을 자유롭게 텍스트로 입력하거나 사전 정의된 감정 선택지를 제공        | ★★★ |
+| F-02 | 날씨 정보 수집    | 현재 위치의 날씨를 OpenWeather API로 자동 수집 (맑음/흐림/비/눈 등)  | ★★★ |
+| F-03 | 감정 기반 추천    | 감정에 기반한 무드/장르 매핑 또는 GPT reasoning을 통한 Spotify 추천 | ★★★ |
+| F-04 | 날씨 기반 추천    | 날씨에 맞춘 무드 매핑으로 Spotify 음악 추천                     | ★★★ |
+| F-05 | 곡 미리 듣기     | preview\_url이 있는 곡의 30초 미리 듣기 제공                 | ★★  |
+| F-06 | 장르 선택 기능    | 사용자 선호 장르 입력 시 추천 알고리즘에 반영                       | ★★  |
+| F-07 | 추천 이유 표시    | 추천된 곡 옆에 자연어로 추천 근거 설명 표시                        | ★★  |
+| F-08 | 로그인/소셜 로그인  | Django 기본 인증 + Google OAuth2 연동, 개인화 기능 연계       | ★★★ |
+| F-09 | FAQ 제공      | 크롤링 또는 CSV 기반의 FAQ 검색 및 카테고리별 정리                 | ★   |
+| F-10 | 재생목록 생성     | 곡을 모아 개인 재생목록 생성. 이름/설명 입력 또는 자동 생성 지원           | ★★  |
+| F-11 | 재생목록 수정/삭제  | 재생목록의 곡 추가/삭제, 이름 변경 및 목록 삭제                     | ★★  |
+| F-12 | 재생 이력 조회    | 마이페이지에서 추천/재생 이력을 표 또는 그래프로 조회                   | ★   |
+| F-13 | 음악 검색 기능    | 제목/아티스트/앨범명 등으로 Spotify 곡 검색 및 미리듣기/추가/상세 기능 제공  | ★★  |
+| F-14 | 검색 결과 재생목록  | 검색한 곡을 새 재생목록으로 저장                               | ★   |
+| F-15 | 곡/플레이리스트 공유 | 포럼을 통해 나의 재생목록 공유                                | ★★  |
+| F-16 | 관리자 기능      | FAQ/플레이리스트/추천로직/유저관리 백오피스 제공                     | ★★  |
+
+<br>
+
+### ⚙️ **Moodyfy 비기능 요구사항 (Non-Functional Requirements)**
+
+| 번호   | 항목       | 설명                                                 | 중요도 |
+| ---- | -------- | -------------------------------------------------- | --- |
+| N-01 | 웹 기반 UI  | PC/모바일 브라우저 대응 반응형 웹 (Django + Tailwind/Bootstrap) | ★★★ |
+| N-02 | 응답 시간    | 추천/검색 평균 응답 시간 5초 이내                               | ★★★ |
+| N-03 | API 안정성  | 외부 API 호출 실패 시 fallback 메시지 제공                     | ★★★ |
+| N-04 | 접근 제어    | 비로그인 사용자는 추천/이력/마이페이지 접근 제한                        | ★★★ |
+| N-05 | 확장 가능성   | 음성/사진 기반 감정 분석, AI 추천 등 향후 기능 쉽게 추가 가능한 구조         | ★★  |
+| N-06 | 유지보수 용이성 | 앱/모듈 구조화, 주석/문서화 정책 유지                             | ★★  |
+| N-07 | 오픈소스 준수  | Spotify, OpenWeather API 등 라이선스 표기 준수              | ★★  |
+| N-08 | 서비스 안정성  | 장애/트래픽 증가 대응 위한 재시도 및 이중화 고려                       | ★★  |
+| N-09 | 웹 접근성    | 색상 대비, 폰트 크기, 키보드 내비게이션 등 접근성 기준 충족                | ★   |
+
 
 
 <hr>
