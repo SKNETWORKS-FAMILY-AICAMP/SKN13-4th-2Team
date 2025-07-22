@@ -4,27 +4,166 @@
 
 ---
 
-## 📁 디렉토리 구조
+## 📁 프로젝트 폴더 구조
 
 ```
-SKN13-4th-5Team/
-├── __pycache__/
+C:.
+│ .cache
+│ .env
+│ .gitignore
+│ check.ipynb
+│ check_pyreadline3.py
+│ CONTRIBUTING.md
+│ db.sqlite3
+│ faq 크롤링.ipynb
+│ faq.csv
+│ faq_test.csv
+│ manage.py
+│ README.md
+│ requirements.txt
 │
-├── chatbot_web/
+├─.ipynb_checkpoints
+│ faq 크롤링-checkpoint.ipynb
+│ faq-checkpoint.csv
 │
-├── llm_tools/
-│   ├── chat_history_manager.py
-│   ├── chat_history_manager2.py
-│   ├── get_weather.py
-│   ├── google_places.py
-│   ├── naver_search.py
-│   └── retriever.py
+├─accounts
+│ │ admin.py
+│ │ apps.py
+│ │ forms.py
+│ │ models.py
+│ │ signals.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─migrations
+│ ├─templates
+│ └─pycache
 │
-├── .gitignore
-├── app.py
-├── chat_agent.py
-├── CONTRIBUTING.md
-└── README.md
+├─bot
+│ │ .gitignore
+│ │ chatbot.py
+│ │ mapping.py
+│ │ responses.py
+│ │ utils.py
+│ └─pycache
+│
+├─chatbot
+│ ├─management
+│ ├─migrations
+│ └─pycache
+│
+├─faq
+│ │ admin.py
+│ │ apps.py
+│ │ forms.py
+│ │ models.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─management
+│ ├─migrations
+│ ├─templates
+│ └─pycache
+│
+├─forum
+│ │ admin.py
+│ │ apps.py
+│ │ forms.py
+│ │ models.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─migrations
+│ ├─templates
+│ └─pycache
+│
+├─home
+│ │ admin.py
+│ │ apps.py
+│ │ bot_logic.py
+│ │ consumers.py
+│ │ dataset.csv
+│ │ lastfm_utils.py
+│ │ mapping.py
+│ │ models.py
+│ │ routing.py
+│ │ tag_extractor.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─migrations
+│ ├─templates
+│ └─pycache
+│
+├─images
+│ 로고.png
+│ 주제배경.png
+│
+├─locale
+│ └─ko_KR
+│ └─LC_MESSAGES
+│ django.mo
+│ django.po
+│
+├─media
+│ └─avatars
+│ default_avatar.png
+│
+├─music_project
+│ │ asgi.py
+│ │ settings.py
+│ │ urls.py
+│ │ wsgi.py
+│ │ init.py
+│ └─pycache
+│
+├─mypage
+│ │ admin.py
+│ │ apps.py
+│ │ forms.py
+│ │ models.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─management
+│ ├─migrations
+│ ├─templates
+│ └─pycache
+│
+├─scripts
+│ create_missing_profiles.py
+│ create_superuser.py
+│
+├─search
+│ │ admin.py
+│ │ apps.py
+│ │ consumers.py
+│ │ models.py
+│ │ routing.py
+│ │ tests.py
+│ │ urls.py
+│ │ views.py
+│ │ init.py
+│ ├─management
+│ ├─migrations
+│ ├─templates
+│ └─pycache
+│
+├─static
+│ └─images
+│ moodyfy_logo.png
+│
+└─templates
+│ base.html
+│ index.html
+│ music_player_popup.html
+└─socialaccount
+login.html
 ```
 
 ---

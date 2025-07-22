@@ -9,7 +9,7 @@ from bot.utils import get_weather
 
 # LLM 초기화
 llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
+    model="gpt-4o-mini",
     api_key=settings.OPENAI_API_KEY
 )
 
@@ -151,6 +151,7 @@ def normalize_weather_with_llm(raw_desc):
     prompt = f"""
     다음은 실제 날씨 API에서 받은 날씨 설명이야: "{raw_desc}"
     아래 정규화된 키 중 가장 유사한 것을 골라서 반환해줘:
+    **무조건 이중에 하나를 골라야해!**
     - 맑음
     - 흐림
     - 비
@@ -207,7 +208,7 @@ def _get_llm_response(prompt):
         "Content-Type": "application/json",
     }
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o-mini",
         "messages": [{"role": "user", "content": prompt}],
     }
     response = requests.post(
