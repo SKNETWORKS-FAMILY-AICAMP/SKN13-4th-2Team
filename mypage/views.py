@@ -66,7 +66,8 @@ def create_playlist(request):
                     defaults={
                         'title': track_data['name'],
                         'artist': track_data['artist'],
-                        'track_url': track_data['url']
+                        'track_url': track_data['url'],
+                        'image_url': track_data.get('album_image_url', '')
                     }
                 )
                 playlist.tracks.add(track_obj)
@@ -131,7 +132,8 @@ def edit_playlist(request, playlist_id):
                     defaults={
                         'title': track_data['name'],
                         'artist': track_data['artist'],
-                        'track_url': track_data['url']
+                        'track_url': track_data['url'],
+                        'image_url': track_data.get('album_image_url', '')
                     }
                 )
                 playlist.tracks.add(track_obj)
