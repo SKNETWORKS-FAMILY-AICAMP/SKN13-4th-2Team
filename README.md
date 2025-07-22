@@ -62,17 +62,17 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
   <tr>
     <td align="center" width="16%">
       <a href="https://github.com/Koojh99">
-        <img src="https://img.shields.io/badge/GitHub-Koojh99-1F1F1F?logo=github" alt="구자현 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-Koojh99-C7CDE5?logo=github" alt="구자현 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/Gogimin">
-        <img src="https://img.shields.io/badge/GitHub-Gogimin-1F1F1F?logo=github" alt="김지민 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-Gogimin-FAC8D1?logo=github" alt="김지민 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/rudwo524">
-        <img src="https://img.shields.io/badge/GitHub-rudwo524-1F1F1F?logo=github" alt="민경재 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-rudwo524-FECC99?logo=github" alt="민경재 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
@@ -82,12 +82,12 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/yunawawa">
-       <img src="https://img.shields.io/badge/GitHub-yunawawa-1F1F1F?logo=github" alt="이유나 GitHub"/>
+       <img src="https://img.shields.io/badge/GitHub-yunawawa-FFF2A3?logo=github" alt="이유나 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/seonguihong">
-        <img src="https://img.shields.io/badge/GitHub-seonguihong-1F1F1F?logo=github" alt="홍성의 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-seonguihong-BAD7E7?logo=github" alt="홍성의 GitHub"/>
       </a>
     </td>
   </tr>
