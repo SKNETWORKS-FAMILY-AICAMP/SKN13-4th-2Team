@@ -173,6 +173,7 @@ def normalize_weather_with_llm(raw_desc):
         return None
 
 def recommend_by_current_weather(city=None, limit=5):
+    city = city or "서울"  # ← 이거 추가
     weather_info = get_weather(city=city)
 
     if "오류" in weather_info or "없습니다" in weather_info:
