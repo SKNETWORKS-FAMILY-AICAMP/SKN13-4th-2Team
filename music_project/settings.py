@@ -152,7 +152,12 @@ LOCALE_PATHS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+DEBUG = True
+
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # 또는 os.path.join(BASE_DIR, 'static')
+]
 
 # Media files (User uploaded files)
 MEDIA_URL = '/media/'
