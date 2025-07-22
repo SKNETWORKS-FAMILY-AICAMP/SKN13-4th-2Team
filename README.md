@@ -46,17 +46,17 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
       <b><img src="https://github.com/user-attachments/assets/a2e78d57-db3e-4204-9d02-fff1ab699124"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/2624f7cc-db21-436d-bccd-52cede65a3b0"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/2e42b141-fff2-4d56-8c44-7b00756fd814"/></b>
     </td>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/cc1f39e6-3496-433e-a24b-5322a69ad41d"/></b>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/c69f9919-6ed2-4036-b24f-bdcca4121e7d"/></b>
     <td align="center" width="16%">
-      <b></b>
+      <b><img src="https://github.com/user-attachments/assets/fd9a233e-ae7e-4d89-90b6-49ba7d690bd5"/></b>
     </td>
   </tr>
   <tr>
