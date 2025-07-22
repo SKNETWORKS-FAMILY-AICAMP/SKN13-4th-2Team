@@ -8,7 +8,7 @@ from bot.utils import get_weather
 
 # LLM 초기화
 llm = ChatOpenAI(
-    model="gpt-4.0-mini",
+    model="gpt-3.5-turbo",
     api_key=settings.OPENAI_API_KEY
 )
 
@@ -54,7 +54,6 @@ def analyze_user_intent(user_message):
         return result
     except Exception as e:
         print(f"[오류] LLM 의도 분석 중 예외 발생: {e}")
-        # 최소한 기본 구조는 반환하게
         return {
             "intent": "general_conversation",
             "keywords": [],
@@ -68,13 +67,11 @@ def normalize_keywords(keywords):
     for keyword in keywords:
         k = keyword.strip()
 
-        # 정확히 일치
         if k in MOOD_TRANSLATION_MAP:
             mood_tag = MOOD_TRANSLATION_MAP[k]
         elif k in GENRE_TAG_MAPPING:
             genre_tag = GENRE_TAG_MAPPING[k]
         else:
-            # 포함된 경우 대응
             for m in MOOD_TRANSLATION_MAP:
                 if m in k:
                     mood_tag = MOOD_TRANSLATION_MAP[m]
@@ -85,7 +82,6 @@ def normalize_keywords(keywords):
                     break
 
     return mood_tag, genre_tag
-
 
 def search_specific_music(sp_client, keyword, limit=5):
     try:
@@ -145,6 +141,59 @@ def get_lastfm_fallback(keywords, limit=5):
     print(f"[변환된 태그] mood: {mood_tag}, genre: {genre_tag}")
     return get_tracks_by_tags(mood_tag=mood_tag, genre_tag=genre_tag, limit=limit)
 
+def normalize_weather_with_llm(raw_desc):
+    print(f"[정규화 요청] 날씨 설명: {raw_desc}")
+    prompt = f"""
+    다음은 실제 날씨 API에서 받은 날씨 설명이야: "{raw_desc}"
+    아래 정규화된 키 중 가장 유사한 것을 골라서 반환해줘:
+    - 맑음
+    - 흐림
+    - 비
+    - 눈
+    - 천둥번개
+    - 안개
+    - 더움
+    - 추움
+    - 바람
+    - 구름조금
+    
+    응답은 반드시 키 하나만 JSON 형식으로:
+    {{"normalized": "흐림"}}
+    """
+    try:
+        response = _get_llm_response(prompt)
+        result = json.loads(response.strip("```json").strip("```"))
+        return result.get("normalized")
+    except:
+        return None
+
+def recommend_by_current_weather(city=None, limit=5):
+    weather_info = get_weather(city=city)
+
+    if "오류" in weather_info or "없습니다" in weather_info:
+        return weather_info, []
+
+    try:
+        raw_desc = weather_info.split("의 날씨는 '")[1].split("'")[0]
+        normalized = normalize_weather_with_llm(raw_desc)
+
+        if not normalized or normalized not in WEATHER_TO_MOOD_TAGS:
+            return f"현재 {city or '서울'}의 날씨는 '{raw_desc}'이지만, 이에 맞는 감정 태그가 없어요.", []
+
+        mood_tags = WEATHER_TO_MOOD_TAGS[normalized]
+        for mood_tag in mood_tags:
+            tracks = get_tracks_by_tags(mood_tag=mood_tag, limit=limit)
+            if tracks:
+                break
+        if not tracks:
+            return f"{normalized} 분위기에 맞는 음악을 찾지 못했어요.", []
+        
+        city_name = city if city else "서울"
+        return f"오늘 {city_name}의 날씨는 {normalized}이에요. 이런 음악은 어떠세요?", tracks
+
+    except Exception as e:
+        return f"날씨 분석 중 문제가 발생했어요: {e}", []
+
 def _get_llm_response(prompt):
     import requests
     headers = {
@@ -169,27 +218,3 @@ def _get_llm_response(prompt):
     except Exception as e:
         print("[LLM 응답 파싱 오류]", e)
         return "죄송해요. 답변을 생성하는 중 문제가 발생했어요."
-
-def recommend_by_current_weather(city=None, limit=5):
-    weather_info = get_weather(city=city)
-
-    if "오류" in weather_info or "없습니다" in weather_info:
-        return weather_info, []
-
-    try:
-        weather_desc = weather_info.split("의 날씨는 '")[1].split("'")[0]
-        mood_tags = WEATHER_TO_MOOD_TAGS.get(weather_desc, [])
-        
-        if not mood_tags:
-            return f"현재 {city or '서울'}의 날씨는 '{weather_desc}'이지만, 이에 맞는 감정 태그가 없어요.", []
-
-        mood_tag = mood_tags[0]
-        tracks = get_tracks_by_tags(mood_tag=mood_tag, limit=limit)
-
-        if not tracks:
-            return f"{weather_desc} 분위기에 맞는 음악을 찾지 못했어요.", []
-
-        return f"현재 {city or '서울'}의 날씨는 {weather_desc}이에요. 이런 음악은 어떠세요?", tracks
-
-    except Exception as e:
-        return f"날씨 분석 중 문제가 발생했어요: {e}", []
