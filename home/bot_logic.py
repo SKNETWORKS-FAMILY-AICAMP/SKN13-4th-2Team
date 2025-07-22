@@ -9,7 +9,7 @@ from bot.utils import get_weather
 
 # LLM 초기화
 llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
+    model="gpt-4o-mini",
     api_key=settings.OPENAI_API_KEY
 )
 
@@ -207,7 +207,7 @@ def _get_llm_response(prompt):
         "Content-Type": "application/json",
     }
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o-mini",
         "messages": [{"role": "user", "content": prompt}],
     }
     response = requests.post(
