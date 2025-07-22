@@ -40,7 +40,13 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
 <table width="100%">
 
   <tr>
-
+    <td align=center><b>구자현</b></td>
+    <td align=center><b>김지민</b></td>
+    <td align=center><b>민경재</b></td>
+    <td align=center><b>박수빈</b></td>
+    <td align=center><b>이유나</b></td>
+    <td align=center><b>홍성의</b></td>
+  </tr>
   <tr>
     <td align="center" width="16%">
       <b><img src="https://github.com/user-attachments/assets/a2e78d57-db3e-4204-9d02-fff1ab699124"/></b>
@@ -77,12 +83,12 @@ GPT 기반 LLM과 그리고 외부 음악 API들을 융합해 사용자 맞춤�
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/subin0821">
-        <img src="https://img.shields.io/badge/GitHub-subin0821-1F1F1F?logo=github" alt="박수빈 GitHub"/>
+        <img src="https://img.shields.io/badge/GitHub-subin0821-FFF2A3?logo=github" alt="박수빈 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
       <a href="https://github.com/yunawawa">
-       <img src="https://img.shields.io/badge/GitHub-yunawawa-FFF2A3?logo=github" alt="이유나 GitHub"/>
+       <img src="https://img.shields.io/badge/GitHub-yunawawa-EFE1F8?logo=github" alt="이유나 GitHub"/>
       </a>
     </td>
     <td align="center" width="16%">
